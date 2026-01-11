@@ -380,7 +380,7 @@
                             </div>
                             <div className="mt-12">
                                 <h1 className="text-4xl md:text-5xl font-jua text-yellow-400 mb-4 tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                                    질문의 <span className="text-white">대답</span>을<br/>들으시시겠습니까?
+                                    질문의 <span className="text-white">대답</span>을<br/>들으시겠습니까?
                                 </h1>
                                 <div className="flex justify-center gap-2 mt-4">
                                     {[...Array(3)].map((_, i) => (
@@ -405,105 +405,7 @@
                     onTouchEnd={onEnd}
                 >
                     <div className="fixed inset-0 pointer-events-none opacity-20">
-                        {[...Array(25)].map((_, i) => (
-                            <div key={i} className="absolute animate-float-star text-yellow-500/20" 
-                                 style={{ top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 5}s` }}>
-                                {i % 2 === 0 ? <Heart size={16} /> : <Sparkle size={16} />}
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="text-center z-10 px-6 pointer-events-none">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                            <Moon size={28} className="text-yellow-400 animate-pulse" fill="currentColor" />
-                            <h1 className="text-3xl font-jua tracking-[0.2em] text-white uppercase">Masic Answer Card</h1>
-                            <Moon size={28} className="text-yellow-400 animate-pulse rotate-180" fill="currentColor" />
-                        </div>
-                        <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-[0.4em]">Fanning Out Your Destiny</p>
-                    </div>
-
-                    <div className="relative w-full h-[550px] flex items-center justify-center mt-10">
-                        {cards.map((card, index) => {
-                            const isSelected = selectedId === card.id;
-                            const anglePerCard = 8;
-                            const baseAngle = (index - cards.length / 2) * anglePerCard;
-                            const currentAngle = baseAngle + rotationOffset;
-                            const radius = 900;
-                            const x = radius * Math.sin((currentAngle * Math.PI) / 180);
-                            const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius;
-                            const opacity = Math.abs(currentAngle) > 60 ? 0 : 1;
-
-                            return (
-                                <div 
-                                    key={card.id} 
-                                    onClick={() => handleCardClick(card.id)} 
-                                    className={`absolute transition-all duration-[400ms] ease-out perspective-2000
-                                        ${isSelected ? 'z-[500]' : 'z-10'}
-                                        ${!isSelected && selectedId !== null ? 'opacity-10 blur-[5px] scale-75' : ''}
-                                    `}
-                                    style={{
-                                        transform: isSelected 
-                                            ? (isFlipped ? 'translateY(0) scale(1.1) rotateY(180deg)' : 'translateY(-100px) scale(1.2) rotate(0deg)')
-                                            : `translate(${x}px, ${y}px) rotate(${currentAngle}deg)`,
-                                        width: '220px', height: '400px', transformStyle: 'preserve-3d',
-                                        opacity: isSelected ? 1 : opacity,
-                                        visibility: opacity === 0 && !isSelected ? 'hidden' : 'visible'
-                                    }}
-                                >
-                                    {/* 카드 뒷면: 테두리 없이 꽉 차게 */}
-                                    <div className="absolute inset-0 bg-[#0a0a25] rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.5)] backface-hidden overflow-hidden" style={{ backfaceVisibility: 'hidden' }}>
-                                        <img 
-                                            src="https://postfiles.pstatic.net/MjAyNjAxMTFfMTAz/MDAxNzY4MTQzNTI0NTkz.TYbxrEx83UisuZ7YrkYQMBC6vo9f1UuoCm2LhjBDUSUg.mXVpXDV00BN07Sk87VKemwr7IbiL_y-WrpPUnCOE8J0g.PNG/image_-_10-01-2026_15-43-50.png?type=w966" 
-                                            className="w-full h-full object-cover rounded-none" 
-                                            alt="Card Back" 
-                                        />
-                                    </div>
-                                    
-                                    {/* 카드 앞면: 모든 디자인 요소 통합 */}
-                                    <div className="absolute inset-0 bg-[#050510] border-[1px] border-yellow-400/40 rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-                                        <div className="w-full aspect-square relative bg-indigo-950 overflow-hidden">
-                                            <img 
-                                                src={drawnResult.gif} 
-                                                className="w-full h-full object-cover brightness-90 rounded-none" 
-                                                alt="Meme" 
-                                                onError={handleImageError}
-                                            />
-                                            <div className="absolute inset-0 border-b-[1px] border-yellow-400/20 pointer-events-none"></div>
-                                        </div>
-                                        
-                                        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-                                            <img 
-                                                src="https://postfiles.pstatic.net/MjAyNjAxMTBfMTAw/MDAxNzY4MDI5NzAwMjAw.6PBul7ED3TjoOza7jjkPVvYKZ05BXQuoMjNPC9VQOeIg.zWNLbqqrvRPYrodgID-_KaIGAphDvj0DUnC4kS1bMwkg.PNG/%EB%B0%94%EB%8B%A5.png?type=w966" 
-                                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80" 
-                                                alt="text-background" 
-                                            />
-                                            {/* 타로 장식 선 */}
-                                            <div className="absolute inset-2 border-[0.5px] border-yellow-500/20 pointer-events-none z-10">
-                                                <TarotCorner className="absolute top-0 left-0 text-yellow-500/40" />
-                                                <TarotCorner className="absolute top-0 right-0 text-yellow-500/40 rotate-90" />
-                                                <TarotCorner className="absolute bottom-0 right-0 text-yellow-500/40 rotate-180" />
-                                                <TarotCorner className="absolute bottom-0 left-0 text-yellow-500/40 -rotate-90" />
-                                            </div>
-                                            
-                                            <div className="absolute inset-0 bg-indigo-950/30 z-10"></div>
-                                            
-                                            <div className="relative z-20 flex flex-col items-center justify-center w-full h-full">
-                                                <p className="text-white text-lg font-myeongjo font-bold leading-relaxed break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2">
-                                                    "{drawnResult.text}"
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    <div className="z-20 min-h-[110px] flex flex-col items-center justify-center px-6 pointer-events-none">
-                        {isFlipped ? (
-                            <button onClick={reset} className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 px-14 py-4 rounded-full flex items-center gap-3 transition-all active:scale-95 shadow-[0_10px_20px_rgba(251,191,36,0.3)] animate-in fade-in zoom-in duration-500 group pointer-events-auto">
-                                <Refresh size={22} className="group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="font-jua text-2xl tracking-wider text-center">다른 대답 듣기</span>
+                        {[...Array(보기</span>
                             </button>
                         ) : (
                             <div className="flex flex-col items-center gap-4">
@@ -524,4 +426,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>
