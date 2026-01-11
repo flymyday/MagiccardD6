@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 네이버 이미지 보안 정책 우회 -->
+    <meta name="referrer" content="no-referrer">
     <title>마법의 데식고둥</title>
-    <!-- 외부 라이브러리 로드 -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -19,7 +20,7 @@
             font-family: 'Noto Sans KR', sans-serif;
             overflow: hidden;
             color: #fff;
-            touch-action: none; /* 브라우저 기본 스크롤 방지 */
+            touch-action: none;
         }
 
         .font-jua { font-family: 'Jua', sans-serif; }
@@ -31,7 +32,6 @@
             -webkit-backface-visibility: hidden;
         }
 
-        /* 애니메이션 */
         @keyframes bounce-subtle {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-12px); }
@@ -39,8 +39,8 @@
         .animate-bounce-subtle { animation: bounce-subtle 3s ease-in-out infinite; }
 
         @keyframes float-star {
-            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-            50% { transform: translate(15px, -15px) scale(1.2); opacity: 0.8; }
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(15px, -15px) scale(1.2); opacity: 0.5; }
         }
         .animate-float-star { animation: float-star 5s ease-in-out infinite; }
 
@@ -63,7 +63,6 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // 아이콘 컴포넌트
         const Heart = ({ size = 24, className = "" }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -89,9 +88,9 @@
         );
 
         const TarotCorner = ({ className = "" }) => (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={className}>
                 <path d="M2 12V2H12" />
-                <circle cx="2" cy="2" r="1.5" fill="currentColor" />
+                <circle cx="2" cy="2" r="1" fill="currentColor" />
             </svg>
         );
 
@@ -100,213 +99,220 @@
             const [selectedId, setSelectedId] = useState(null);
             const [isFlipped, setIsFlipped] = useState(false);
             const [drawnResult, setDrawnResult] = useState({ text: '', gif: '' });
-            
             const [rotationOffset, setRotationOffset] = useState(0);
+            
             const isDragging = useRef(false);
             const startX = useRef(0);
             const lastRotation = useRef(0);
 
+            const fallbackImages = [
+                "https://postfiles.pstatic.net/MjAyNjAxMTFfMjMw/MDAxNzY4MDY5MzEwOTA5.DLU6hhnt3oRD3RmXlCVpPB2_cnEajMnPORxVHjIQhfYg.1DMFvkSEHgmEJ-bAzh0fQlQsWodAcbMOoH_lnjkOzlYg.JPEG/537364187_17856572916497697_6081465195972461257_n.jpg?type=w966",
+                "https://postfiles.pstatic.net/MjAyNjAxMTFfODAg/MDAxNzY4MDY5MzY1MjY2.MdQd-clArd3_0JGkX2dlbELlq7JCddkh7Y3Isr8Ot44g.-bbsMW9jzH2FzeFJ8SBHcHql72ZYKvC6npgELlr0PDAg.JPEG/538969698_17869140549428518_4555461970602819027_n.jpg?type=w966",
+                "https://postfiles.pstatic.net/MjAyNjAxMTFfNDEg/MDAxNzY4MDY5MzY1Mjc5.2NzXB5w5CXmTxgtpT9O83l-e7S8f7mamvx4qbjPykD4g.xh90A28qanheul1Nn0lwQK_zlfc6vbCg6IENTjy_fGog.JPEG/538238381_17869140621428518_3060226390477421036_n.jpg?type=w966",
+                "https://postfiles.pstatic.net/MjAyNjAxMTFfMTI0/MDAxNzY4MDY5Mzc3Mzkx.uhTDnjillPziwpv-LCvrPCgTUazidgES0xJOoxk06log.V8U1OvGO4Uz6bhRoAH4Iex1oHb5uVguviMXNZfpKohEg.JPEG/538758614_17869140675428518_4627463516377340032_n.jpg?type=w966"
+            ];
+
             const oracleData = useMemo(() => [
-                { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI3/MDAxNzY4MDI3ODM2MTgx.MuLSUXwAZle7fjBemO8LEtGaCIaID-mWzvsDbIi73Eog.0QeVyljzk4CufcXxyIaayZ-e7Ywbc5FOVmHbqaX5100g.JPEG/538416297_17851842099533033_5727223327477060302_n.jpg?type=w966" }
-{ text: "망설임 없이 추진하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI1/MDAxNzY4MDI3ODE2MTY1.94BqgJHDyTEAthZ_OagV5KL3qsbq356feyKHmpcXuqwg.ORM3BABwmjudKCS68BOscQ1NAaTJl8zj_Vc3PuDSBUAg.JPEG/538141683_17869140528428518_3249832124999812041_n.jpg?type=w966" }
-{ text: "무조건 찬성이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTkw/MDAxNzY4MDI3ODM4MzQw.0tUnrqXGr_2ewjvnFbhNz8kvcK2_2HjjEUUY3y0bQxgg.ZZsFQsu41r0JwRennYoj-YHN_tKmOX46oSOOOalwBsIg.JPEG/610854819_17879544036449975_8363717810572267257_n.jpg?type=w966" }
-{ text: "아주 좋은 결과가 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAx/MDAxNzY4MDI3ODM2MTg0.6YDijTgKHzsbRDeLyib0Eb875jMWvnGFAeSy7e3UYGMg.nW8d_8od3_9tFTbasYbeT3QWcYWu90bCynB4mCGAdusg.JPEG/538694495_17853598878515561_7260400000889012041_n.jpg?type=w966" }
-{ text: "당장 오케이.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjE0/MDAxNzY4MDI3ODM4NTI5.gzNt5wJXOXCt8Km-8O0HO76J7qXEcKdirYZl1iitxmIg.bVpJk1sogqeRDT5j5lKBjMJxourCdfLcz14xnixajLMg.JPEG/611679669_17903663664339947_960360971044512900_n.jpg?type=w966" }
-{ text: "너 자신을 믿고 밀고 나가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOSAg/MDAxNzY4MDI3ODE0MDQ3.6gdAoZtjH7fScuNsDnICL4TaGZzLt3ds8Lf2kbTjr6Ag.8X82T87NBFeST4OVWr4OGSjLwx3xmD19g36C7wmlkcIg.JPEG/537702811_17849635935541372_5623865126703965147_n.jpg?type=w966" }
-{ text: "충분히 가치 있는 일이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY5/MDAxNzY4MDI3ODM3NjI5.A3BQ_9lSHOEyimoZOt858-7PmVY8-PI3V6P6eDdWnTkg.cAHiPSq636LLJHr5wEzcN6yJWXGMzmVFYiDhe74gWg4g.JPEG/539251230_17856572907497697_142813885510817238_n.jpg?type=w966" }
-{ text: "가능성이 아주 높아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk5/MDAxNzY4MDI4MTY0MjA2.HMJpqkYFcwQAOmCVa0NUp1ViYiFPM_RXQghy5KGHRHQg.Na2lg48wu0uoDXEJJkiIozLiscH9hK9weWHTBC-xx74g.PNG/image.png?type=w966" }
-{ text: "하늘이 주는 기회야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUz/MDAxNzY4MDI3ODM2MTgy.EmIYK4kixhd1B4xaKdlaKfSxoPbcVFdt1HJwV5oi9EYg.kuhMEPiLTOsBuCVEAClubOB_N0Mx9TeMecnNcZHlBXAg.JPEG/538785258_17849635872541372_8324895571858659608_n.jpg?type=w966" }
-{ text: "적극적으로 참여해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg1/MDAxNzY4MDI4MTU1NTk1.MzNCegcs_bjrv0LoLNl-l88klILphkTqaxXzrtWP-I8g.wN8AyfsEh7EhWNKEGE4iF2XQyzHVvPbc4aNw8RI-Tu8g.PNG/image.png?type=w966" }
-{ text: "지금은 절대 안 돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM1/MDAxNzY4MDI3ODM3MDQy.E41MgkemEhaWWqz_GN04NuLHJjGCwvBJLqKP08DW948g.eG9YidS9HFBGcYg80qU-09mLJihq1Fym2XUCgQbJrOgg.JPEG/538949924_17856572775497697_410999454283471210_n.jpg?type=w966" }
-{ text: "조금 더 신중할 필요가 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQg/MDAxNzY4MDI3ODE0MjMw.c3FSLgtdRvGmB-Kp8o_zrVFiVlWL8Q-6u4UxU0ac4lcg.oz879JgKY8ad4yOG5xlBKb3gy1d01-1biMN15KAZro4g.JPEG/537707959_17856572925497697_4872398989935867305_n.jpg?type=w966" }
-{ text: "다시 한번 재고해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTgg/MDAxNzY4MDI3ODE0MTY4.BuxXDXaUy1lrTz7BsjG3ny-aBHQdanMnBKu4t4ieUoEg.6hfto2cVnxKoqiWPES-GorEhQeGBDIFuhvPD11s-PGog.JPEG/537705665_17851842117533033_6692384493034476798_n.jpg?type=w966" }
-{ text: "위험 부담이 너무 커.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjA3/MDAxNzY4MDI3ODM3NzEx.o0dAAkHp8DP3aZloSbf246d31dBC_8_oF_QoYuMY0KUg.uRe5mA_B_fyzwUiJrC5jVVw_Xi6w2XL4ekNPOKfdw_cg.JPEG/539265081_17856573018497697_4290603764109574436_n.jpg?type=w966" }
-{ text: "멈추는 게 상책이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg0/MDAxNzY4MDI3ODM4NjMw.Isy7hnyRj-ZIC6NgOxoFdpVXBfyXnkbm1iCF_B9xJeAg.9eqH6JmMSc3NG_lP6Ns-wQEjhu1o3okgyrdE2Y9GJWsg.JPEG/612481577_17862015021563590_8371484062858078145_n.jpg?type=w966" }
-{ text: "안 하는 것이 너에게 이득이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjMz/MDAxNzY4MDI3ODM4MjUy.Tpqwk8AWdtYXJxLmmZl71ByJsVIHhEd_Dx23fB2ojs4g.TteGQIXdcvm3UEHb9h4B4APDMi2b_KoAvkFO8X7fcGYg.JPEG/539461762_17856572982497697_2686440422886215393_n.jpg?type=w966" }
-{ text: "나중에 후회할 가능성이 높아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUx/MDAxNzY4MDI3ODE0MjY2.GkTXiaz5RmFu1jIUpFpifuSIIXOc_0wz0TgGxioVR9Eg.2ikJuee_YunK3lrOxyGXI9v8G9QHtynD2rN2ZPxItDUg.JPEG/537741353_17849635881541372_9042093778844313851_n.jpg?type=w966" }
-{ text: "아직 준비가 덜 되었어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM4/MDAxNzY4MDI3ODM2MTc4.YXnSbh8T2hLQdHAYAv4TPoky1lgjIIkGeapplshoDEkg.c-yXc1KL0GH4MRDkl5GxoIZz3Q16JjzlWJby-QyBZ_cg.JPEG/538642540_17872939746408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "보류하는 게 좋겠어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM4/MDAxNzY4MDI3ODM4NjUw.b0_UUe2moDVPRVQcOAOoBjcfH6B3LM5Q96jaGCGLylAg.TbjMJtydYgDJZkgcvm0vscRKW0ibx3eOmdMQGNCseskg.JPEG/613602467_17879544018449975_3471637619768729522_n.jpg?type=w966" }
-{ text: "단호하게 거절해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY5/MDAxNzY4MDI3ODE0NDM1.ZfK6h-Ih-v1Q_cwHlPoaMOshiHiIdCyVcWoJYpPXTUwg.kZdSqgD2vr4wsOWwIVgPlnQcI74kL20OhVPOSLQ-8AIg.JPEG/537743492_17853598776515561_1439169669021641943_n.jpg?type=w966" }
-{ text: "지금이 가장 완벽한 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM4/MDAxNzY4MDI3ODM2MTcx.SWoHrHXieYDB9RHgI6makfklWa7Exe-LJw09VaA9krcg.o3OCDQNEEBamtTf6ZAGpi5IKo42svoHfk-w6BTR14Tsg.JPEG/538413203_17851842153533033_5785455841957328694_n.jpg?type=w966" }
-{ text: "조금 더 기다려야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjgz/MDAxNzY4MDI3NzczNzEy.5zETwfa8Z9wuOLbNVS6ktMmXGDPWCYHvzGUE61gos-4g.82Zq9ZFrihTGFz8w4H1gi_Nxlt27_SUK5MSRYBAafSwg.JPEG/471424665_2463985817267439_7854388981208664359_n.jpg?type=w966" }
-{ text: "내일 아침에 다시 생각해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzkg/MDAxNzY4MDI3ODE0ODQ0.lPiDa1zrSHaR8J5i1fj7UmTXf424VYPZ7bilNXqFfU4g.U9uXjf8jveVcnYvakz4CpGnOdzCbXJUeUrzT3APBqJwg.JPEG/537822432_17853598803515561_4246802335249746931_n.jpg?type=w966" }
-{ text: "한 박자 쉬고 다시 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTE5/MDAxNzY4MDI3ODM3MTMw.6uzxrOKnLDZH5mHgpEmeAH1RtLXsgRdWTO7W7QC60X4g.3sw0YvznioBbYz20owvaxlGMxOAH4aqf7xvmdmaAs4Yg.JPEG/538973487_17842693161563590_5214392892771269849_n.jpg?type=w966" }
-{ text: "기회는 바로 지금뿐이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTYg/MDAxNzY4MDI3Nzc2NzQw.e_ACCzXAFQ5wBuUh2IvYC3c6-UDdx6-gX9_6tkxIj9Ag.oxxXa2HRn5qDF4jHmpbvoWGphGKVG1x9EmpQtwm3GL0g.JPEG/536996056_17857104810488735_4533362822509317324_n.jpg?type=w966" }
-{ text: "폭풍이 지나가길 기다려.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA5/MDAxNzY4MDI3NzczNzMw.cuftKSr6HOwaP4TBBjEtCW4fKA5A5io991Ppoo4Q_HQg.ICZ6w3nQM0og4YqMIMN1p5bo6wlzsnPYL9REbLjfWnUg.JPEG/471426194_1014156487107217_8608857410700626942_n.jpg?type=w966" }
-{ text: "너무 서두르면 일을 그르쳐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA1/MDAxNzY4MDI3ODE2MzA1.RJgNnAiCnR8zITc0VjsJwMtQF2B_pOPd_nTNMorVvv8g.KBET2_M1qf4hgsW2yaqhd3YsDp3ZhLR1o1Kk1rbIrlMg.JPEG/538188868_17851842135533033_8875994665437499073_n.jpg?type=w966" }
-{ text: "적절한 시기를 이미 지나쳤어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOCAg/MDAxNzY4MDI3ODE1OTMy.tZFIYuRyxWa63CMPWC8sac5V3UWOp5yoOVvWtBTd5bAg.GwLyTHMk2GfL7tNdu2HJVHh7R6LDN_ZONZSltAj1_VUg.JPEG/538075744_17852773620529957_7262129354057195308_n.jpg?type=w966" }
-{ text: "조만간 더 좋은 기회가 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjMz/MDAxNzY4MDI3Nzc0NTUw.d2hisKRxAyiAw-f1erFcMqI1oiN6jvkGqq_-XXFkR5wg.BJ58uMKycC-jQ2jiJA_ARGBdykvyHsPcgnvEnK8p1OQg.JPEG/471493049_617751634257203_6473456818438269000_n.jpg?type=w966" }
-{ text: "한동안은 관망하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTAw/MDAxNzY4MDI3Nzc2Nzc3.0xdXD-lwOukAJYzLd8Yy81M66CSjoZDl7Uoqk-jRz0gg.nxNx-bhEuF1xKGKymHcIKSm6KOrmosSlaELsDa1UJTwg.JPEG/537176897_17856572793497697_3275629218337640001_n.jpg?type=w966" }
-{ text: "먼저 손을 내미는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg2/MDAxNzY4MDI2OTkyMTg0.0GamBmUBUR7WIxFWw4smrByfo6CAyQ6ooyIm0rKIUVcg.E1rhKJmJoflLtA6zDa5wxRvOSwGvQG-Tmq7dKU48Eugg.JPEG/470897241_933755445395549_2158590266263032538_n.jpg?type=w966" }
-{ text: "상대방의 입장에서 생각해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA5/MDAxNzY4MDI3ODE0NDQ2.PUmpKgTghbkAzB-AmCmbTWAQdbcVj5nEvwSWdid-pJIg.55oav9arq8JV6cUuhCjcq6HstSMH8Ppo7qQc2weX25Ug.JPEG/537765632_17851842090533033_3547079688752592328_n.jpg?type=w966" }
-{ text: "지금은 거리를 두는 게 정답이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ0/MDAxNzY4MDI3Nzc2OTQ4.8oPnAZulB6b9ZeQNrzNh5ee0VjUZLWq9wMMWa2-zjRIg.ztWkb5tYcc4W58k4DgLS8hSl_Y_8Imigfp54rY0FR9og.JPEG/537216673_17870281185424655_3889326438412804500_n.jpg?type=w966" }
-{ text: "진심을 다해 소통해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk1/MDAxNzY4MDI2OTkyMTcz.pO0_jNo2-1qiE9qsdMi0CD28bCh86lzUmZt4kxbjIP4g.IIAlXZtKobUeN_V4QF3vW3Hnmr6X_luDQY8fxZHNoSgg.JPEG/470902469_1810082033085995_1712473540673241452_n.jpg?type=w966" }
-{ text: "말보다는 행동으로 보여줘.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgw/MDAxNzY4MDI2OTkyMTg5.g0c9UDyUtz1wm-0-_WoPBsR0-W3Nfm0fSmmP-w4-1yIg.6SA1UTINO6jzHtrpCOsKQtZlptObn2a9-eEgMS8yXkMg.JPEG/470918291_492150796699639_2292967133372585021_n.jpg?type=w966" }
-{ text: "최선을 다 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjAy/MDAxNzY4MDU5NDY1NjI2.ObpSi7CsiMAY1SgHoy-L69jiORydfJgC7e6hsHv3s50g.9XW43uShUe9hGecQN3FyMStNzdbjk8cUls_NeIUCGqQg.PNG/image.png?type=w966" }
-{ text: "단호하게 선을 그어야 할 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgg/MDAxNzY4MDI2OTkyMTg2.B4iCadpLO2WNplBz4_shnsfbTdZgSIpSrkl5u0q2qQwg.GqeqQzaULLk-IzxZW4VxuKkSaqITP9QjJBRnSGPlFusg.JPEG/470919413_908091504765278_508618536464747851_n.jpg?type=w966" }
-{ text: "이해할 수 없는 방향으로 흘러가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjE1/MDAxNzY4MDU5NjE5MjM0.2j8eSYylG3gl_XcALcZZFehcs0C2VK0pVQqXhmcBijYg.e7_urzcNsvG9-io6X2HVcUc6bk0bH7HGB7v-4eJhA1kg.PNG/image.png?type=w966" }
-{ text: "주변의 조언을 적극 수용해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEy/MDAxNzY4MDI2OTk0MTA2.lEtxU0EG6KYMy1XTKFawiVAXSaL8LDxMRud9p3U1QxYg.bBuETFJjiappnJKlgEUueJkI8ilrFyZHu9Lup5Xp_wAg.JPEG/470986237_642707671416310_499689345388602537_n.jpg?type=w966" }
-{ text: "타인의 시선에서 완전히 벗어나.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNzUg/MDAxNzY4MDI3Nzc0NDAx.A7snYje0Zo3KZb8l2FeZWbm6Rkerr9B0g3T0Hc0dnr0g.keOtzdzIONcw7tG-EKtUduomZV1Q8arlVZV31fpOeS4g.JPEG/471483003_959293889389500_264797356148724819_n.jpg?type=w966" }
-{ text: "욕심을 내려놓으면 답이 보여.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY1/MDAxNzY4MDI3Nzc0Mzgz.L26jS5A70I5sOXUooyvifQdxIk70e_O8dE22VG9GhY4g.7_erAFKWRLUvM85LGvAqdOUpztFaNEA-oV2AnU2vBEMg.JPEG/471472709_1667712857500340_7554557109893175249_n.jpg?type=w966" }
-{ text: "충분한 휴식이 우선이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjgg/MDAxNzY4MDI3ODM4MTU3.MYNJAQ1DIhslgXRSjg3NUA0vbSPF6QmFCZbDKBsFnN8g.HT14zYLn1QBLKV-yw2uU-9zKz0Nq7lG8g7XZ7tb6YDAg.JPEG/539421454_17856572685497697_8702639014757183663_n.jpg?type=w966" }
-{ text: "실패를 소중한 경험치로 삼아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjg3/MDAxNzY4MDI3ODM3ODU5.s6ndPEHXbdzLysXdm6C6V2sSDJ9wyYDyGTlIo1UoyIwg.3i8v8JYE0LQN3mpQ5XNDacm7r2UMAIicZEMlChTKCksg.JPEG/539302248_17856572703497697_885640478160647670_n.jpg?type=w966" }
-{ text: "너의 직관을 믿고 따라가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODE0OTEx.FJsZ3OKjlb5AwntCYnNaxJpn9UEfZuHnxtZMAwGbfk8g.W3O0XZEG6JvqGyY5R4XCXJwh354dpp_3C26pSVdWDw0g.JPEG/537839663_17853385197516978_4085221377023915417_n.jpg?type=w966" }
-{ text: "초심으로 돌아가야 할 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI1/MDAxNzY4MDI3Nzc0NTU0.bzDBh7-_-3e6IYvR2d3Lwse7qVNZWLp_1v3DdNmQdV8g.EHi1jwgRy22a7fEArVqV1NXm-yKCmnzt0T6XroS-Dusg.JPEG/471504788_956830906343709_588304862126398552_n.jpg?type=w966" }
-{ text: "오늘은 고민하지 말고 푹 자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcz/MDAxNzY4MDI3ODE0ODUy.kbk5fky31RI9_I5UcaSwn6hLKjCJlK4Q57S7nl6Z5lIg.rZfJM67j_KS-yUReqxViOS29c5lFP9GkMxC6Yh_foC0g.JPEG/537829980_17856572991497697_3690909188840047287_n.jpg?type=w966" }
-{ text: "너는 이미 충분히 잘하고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk0/MDAxNzY4MDI4OTIyNzUz.cIc06qXvajBiA5WWelKTcGVx25a8CMdK8HSdDe12qpkg.ncDxJUnPNFu3o4vpHY1G36kI8vNCsWCnN3mOSWERWqog.PNG/image.png?type=w966" }
-{ text: "완벽보다 완성을 목표로 삼아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEz/MDAxNzY4MDI4OTQyMzky.oX1f2XZwvLcfIbX1ScAYaObDtnziDvYT_EmjPgcNXm4g.7jOOtQtSUm4QTDDNHvEf_RMu_Dh226KrhbHJw3QJqrEg.PNG/image.png?type=w966" }
-{ text: "작은 성취감부터 차근차근 맛보자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ3/MDAxNzY4MDI3ODM3ODU3.tIqAsn7cssSfQtNNebushgo_f7vbNaWFJT4vwk2XsG8g.CGbJP1fsLLFRCJMfHVjRh7eHPNQK-5l4Qp34imvR1yYg.JPEG/539301248_17879289753385054_5203923026081307444_n.jpg?type=w966" }
-{ text: "너의 능력을 과소평가하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAy/MDAxNzY4MDI2OTkyMTg2.lZO06-tVa3vmuvsMjjYnOc5lTNDVavHNbFQi9a3leq0g.WEeqEO95T9CwG-C8nIKc4MJ9kFAh7PMbPT894eaW6hIg.JPEG/470920439_451831314448323_2573376562774598034_n.jpg?type=w966" }
-{ text: "주변을 살펴.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfOTgg/MDAxNzY4MDU4NjMzOTUx.PQsYtwxVUENPJDKz-r-cwKJcV3iSMQ1Dv7coKSLcvxgg.yWemYwob2oEZWOV73Z_-XXIpou5tEfEM_bDkR1uZTbsg.JPEG/510453088_17858458947441705_5716218549987159318_n.jpg?type=w966" }
-{ text: "지갑 조심해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTMw/MDAxNzY4MDI3NzczODA3.eELyr71CzqauUblyUCbJY7IFJ5fq9NKi_c7lDbMTJMsg.nnOI1HnXdYNjeNv6zn7w40ZZGPGao603DjLFp4masP8g.JPEG/471426823_2098647027217974_1517878497957254640_n.jpg?type=w966" }
-{ text: "장기적인 관점에서 바라봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTIw/MDAxNzY4MDI2OTk0MTky.UgkQidAS2dHP8Bxw1zys8ZWtSANT9LtepymsnvJxN8wg.h0N23vOYyTykaasWRU1JLkaEkbs7bKs7Av6pZiMWrMgg.JPEG/471278031_940320920909029_8584681969427729457_n.jpg?type=w966" }
-{ text: "전문가의 도움을 받는 게 빨라.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjE1/MDAxNzY4MDI2OTkyNjUz.yrm3wsGlG2EaAetcjSMP2usWBnW4FsRTbWprvENktNMg.DOGZH2AookZofV8tjk0Z90gW_HoM60WfL1N-ddYp-_cg.JPEG/470945491_1088146149675308_4979483407975033744_n.jpg?type=w966" }
-{ text: "끼약약", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUw/MDAxNzY4MDI2OTk0MTQz.3SWzxAnzAzxD9k0NW_kQDP7G0vdpwiBeAUMsT-HaDw4g.6A0WbILJPeSbCfcK6ZcMtzPWYWeqfi0Zf9fkioxDPEMg.JPEG/470987498_1257729875491030_8289500734559718951_n.jpg?type=w966" }
-{ text: "낭비되는 에너지를 차단해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA1/MDAxNzY4MDI4OTYyODc5.eq2KJ1tk1kS3xOtYA-5ULTqjeQNmE_ziQoACFMmdB9kg.rgBv_lFInow9rTw3pOznvQ40Y19Yf07jxQ4Au_-_cP8g.PNG/image.png?type=w966" }
-{ text: "다시 생각해봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjkg/MDAxNzY4MDU5NDIxNzI5.8vzujZhkM6Jx03t_7eQ51CP5XJe1PAkJd0GuN4lbbxYg.nN6ByNve6XZuJFR6IVDq741MbqsdhzgDU86MZMKBVMUg.PNG/image.png?type=w966" }
-{ text: "아무것도 하지 마", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEx/MDAxNzY4MDI2OTkyNTI1.TRNxDxN7whZRMVtX5PNx0W2KLfa02KYhhj5owIx7LsQg.rDMkojasjmy3IkHbDa1OXAglY7MBvMS3N398OdAeMwsg.JPEG/470922918_963180355687371_4723128050973483819_n.jpg?type=w966" }
-{ text: "플랜 B를 반드시 세워두도록 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM1/MDAxNzY4MDI2OTkyNTc2.dJK1lchE2uAZLFCEI116myO3xWWCrqmliD4u2M3m1SQg.VBT5EgOihZ32amfuBvuKM-vJmIiEk4k4tN5c5RyEQnkg.JPEG/470945457_900125468901685_766869907940447039_n.jpg?type=w966" }
-{ text: "기초부터 다시 탄탄히 다져봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTE5/MDAxNzY4MDI2OTkyMTk4.s6txhVu_2TyNf3DNd0St9fnB-HcyKSG8zixZLDu0DA8g.bdN4meduRWvLACfpyiQW7CMg-5IeuMDiUW9FGGbP6A8g.JPEG/470922752_1252414275840486_471645479466448570_n.jpg?type=w966" }
-{ text: "주변 환경을 과감히 바꿔봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk3/MDAxNzY4MDI2OTkyNjY1.x5_HwDT76kBUV6IYmmy6h_7s1wCpjtOyR-LQAPbbk9Ug.aCF4MEJfQS_aeyjX8QRHiv15LobFrVfyLoMhCHZOqTgg.JPEG/470945958_1257029825509105_5819749557036259994_n.jpg?type=w966" }
-{ text: "사랑해요 데이식스.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjM3/MDAxNzY4MDI2OTkyODcy.1Jdd2Trd_uXfx5fy0SKEke2sXY4xADfo5u5g7ZN2UnEg.YeO4h93pVcRfKhLOxSx8uGhkr0dW42fKHg4vN6-eZ7kg.JPEG/470946215_849530197145812_4157498645270876412_n.jpg?type=w966" }
-{ text: "오늘 안에 반드시 결론을 내.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI2OTk0MjMx.FobCh9fZL69AaTUoDxrmvAUQ6xUxByeNoJ9Ps9ilNpUg.c01_WW3X-DIaX5_JR14wLLdJUNy9o8OKzxEoNVBQYOIg.JPEG/471285424_1094838635299019_1624192532019363486_n.jpg?type=w966" }
-{ text: "작은 습관부터 하나씩 고쳐봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIx/MDAxNzY4MDI2OTkzMTEw.iWAGpw9R32Mr95OMpHrXoxCtyNE8S77PiVmcyy8JzX0g.KwGNEFh2-Z2fGL1vuiRuofyhvybKq_aXJ2nxBnv3wkwg.JPEG/470971345_3970017409940054_4919446038062051747_n.jpg?type=w966" }
-{ text: "인생을 걸어봐", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjU3/MDAxNzY4MDU4NjM0MDAw.2gIjG_OrhCQfFT5HScFcNrSuA3VIBEOLBy0lSWFwyBUg.TM-ibjCS5c9gdqSPKRsXtFgABL2aqYS4hWH-IfDhu5sg.JPEG/502373952_17858459013441705_7350694088630081152_n.jpg?type=w966" }
-{ text: "일단 시작하고 나서 고민해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI3Nzc0Njkz.uzVzmBrEK9Xj0aXxU0bGkaIss4VOA1Bpd9EmQpkg-rwg.Ev0h8jhgOd1gqBnCsu8gxctCe8p-Ddj4bpTI1dzrziYg.JPEG/471540709_1235081514218466_462777939947061301_n.jpg?type=w966" }
-{ text: "정면 돌파가 유일한 해결책이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTUz/MDAxNzY4MDU4NjMzMzk1.HN_nHruPrKcZ77K7JEye932OzMMpIFyb5BJSyZxvvnog.0GWKhFo0LOlHxinesHA_cGE6GDXL2fBMRx_qURtujuEg.JPEG/509443783_17858459055441705_583834764044819433_n.jpg?type=w966" }
-{ text: "한 번 더 도전해 볼 가치가 충분해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEx/MDAxNzY4MDI2OTkyOTEy.uq6tfVZ5_YOwXb4Wk5fqhnNll1wNhfntBnqHEeidF8Mg.jFSiF_UfyQCTCXY8m8Ub2L2LyphE-qkwClshfPEJtIQg.JPEG/470951223_905809368200224_1808752253396717876_n.jpg?type=w966" }
-{ text: "불필요한 것들을 먼저 정리해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTAg/MDAxNzY4MDI2OTk0NDUz.poyLnSbYsTvTcJjpsU9AHVSGM-Hzi0jDBNA-zWXFuMog.q-DYi5bT-WtLs1tZdxMOxeq8Zaqyz_S1fLDiMILpvZcg.JPEG/471296581_557717147106015_1395038629054871909_n.jpg?type=w966" }
-{ text: "주변인에게 잘해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTcg/MDAxNzY4MDYxMDg1ODY1.o1UVCiRtmYo7839Y0YNmXAj5ZVR7d76kKmpRf1GzQbIg.C7J0LXWHJdNLwlaRonFT7WT7SKN-NYqs00ZTCGv1_CEg.PNG/image.png?type=w966" }
-{ text: "곧 좋은 소식이 들려올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjA5/MDAxNzY4MDU4NjMzMzg5.yzNHMSqVTGGjF59o-lAh2o0lPzi1iZ9r76mrkAA_M18g.scNQPxuVWY0kJHX9k1I7PG9S6GAGLdR3-BBw2iM8C5gg.JPEG/509371049_17847308121503376_582685732200797260_n.jpg?type=w966" }
-{ text: "노력한 만큼 확실한 보상이 따라.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMyAg/MDAxNzY4MDI3ODE2NDUw.JxWej74R_IqT7nXmtE-B6onQApJ6KgED3IjHpx4GHB8g.p95_wyWOvvPODFS89uUI4QUDqf3XElbAI2jMLrWrXZcg.JPEG/538210399_17870281239424655_5934383533660286081_n.jpg?type=w966" }
-{ text: "생각보다 훨씬 쉽게 풀릴 문제야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzcg/MDAxNzY4MDI3ODE2NTM2.qE8_ySlvkie5LjCT_bF_IOBEaNd1MTJB59XgSt2Tq24g.Gb8v9s0NMhOcF8QFpScUexYDzwpXMKm97TwBMlUXLi0g.JPEG/538214811_17851842126533033_8361268849527843389_n.jpg?type=w966" }
-{ text: "운명의 흐름에 몸을 맡겨봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUw/MDAxNzY4MDI3ODEzMDYx.YhjK37zjIl3WoIqqEnBijXoMpUejJ1CmetAHLd_n_58g.oGl1CgZItX0k4lYjv8dTTKn8kEXNztJWrg2Wr3jwDc8g.JPEG/537370959_17856572937497697_7915547816834064916_n.jpg?type=w966" }
-{ text: "고생 끝에 반드시 낙이 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA2/MDAxNzY4MDI3ODE2NTQz.LiulnC3XUvqjdvo5LXgy0QwXBnNBVlxoY9tgaOvIW2og.N7BRnyXD7uvPb10zS4kOKY1zO3ISZTM5DaSGZLOGtUEg.JPEG/538221219_17856572766497697_7545804312809720754_n.jpg?type=w966" }
-{ text: "귀인이 나타나 너를 도울 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTYg/MDAxNzY4MDYxMDcwMDIx.6oxnVEp8d6Sfjrh4MahQiNvc00mAoji7bVp94eKbW3og.TkD_byS1AZ7z_MGgZD7NB0-9qp99M4u8imIfSQn5FUsg.PNG/image.png?type=w966" }
-{ text: "안되겠다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUw/MDAxNzY4MDU4NjMzNzY4.lcq0gzqSidmD0qjd8V-x0n2KyMSDWuIErHeHDbwLIx8g.golBakmLbPN3Lt7K78HgLWG1UahE5CItCwMG9EscrS8g.JPEG/503702885_17847308103503376_5049730133105342113_n.jpg?type=w966" }
-{ text: "전화위복의 기회가 될 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjUw/MDAxNzY4MDI2OTk0NTEx.kU8aozc1hLKMMMVBtUIkujw6xnlAF26FYtG3i3ALOysg.j2avlpWbCCumyeykZ_glrNh66VjY8wCf4C9e2L1giU4g.JPEG/471301537_3785900868338309_2414168105373040309_n.jpg?type=w966" }
-{ text: "네 선택이 옳았음이 증명될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI2OTkzMDUx.lvRluM9jVihDJEvAW-3obSp3gR2NTlLRd58VSW70ixMg.8uv1uGpFrfCCCKGwBI4ud6boWwDYFPgqu_FLz1lsBdQg.JPEG/470956508_1246531939980808_7454440809901099566_n.jpg?type=w966" }
-{ text: "멋진 생각이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgg/MDAxNzY4MDI3ODEzNDA3.sNtPQpxrkgtQp0JkYm8DKTzs3-FnMs6mezmFRL27dlgg.CQpP0zfOvZPDVctj1M9mptuusiMpe5FmUxk4NT3CyBAg.JPEG/537398155_17879289750385054_3412903911781870952_n.jpg?type=w966" }
-{ text: "눈앞의 이익에 현혹되지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNzYg/MDAxNzY4MDU5MjY3NzQx.fUlnnDA89pcLkTEXbJgbU-rOio6T_iS6Iq1O9_B_jOog.m2xZnmJ9EjYj1n7SvuZS4Cb8HiULZwblddrEA5UQXukg.PNG/image.png?type=w966" }
-{ text: "돌다리도 두들겨 보고 건너야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfODgg/MDAxNzY4MDI3NzcyNzk4.NfX_VSWeueXGIO7IafDJoKQK8O1cJV4Em50awmyKDVUg.UtvJsT3q8QX2ExbaNeeiO30tmxXoQe0MjtsYmHyhnA8g.JPEG/471415944_1289490815531636_5304775011623346476_n.jpg?type=w966" }
-{ text: "말 한마디가 화근이 될 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMiAg/MDAxNzY4MDI3NzczODgy.9_WFjdKC1bhHBNs6HDcjxepccqy1pw3CE_5wzvZjZOgg.27d1sFXGrThNqCzrT5jVyi__YImhlwPJ_oP1jEHXjUg.JPEG/471434804_454116917741207_4723128961369314575_n.jpg?type=w966" }
-{ text: "공과 사를 확실하게 구별해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTUg/MDAxNzY4MDI2OTk0NjA2.wxF3dmuMhmDbV6mRLMQ4cfTgzvKGHeq4HjHlaEF4op8g.6806pipPpinak58qTcZoWf18YzYt1Jg37hlwWStw2DIg.JPEG/471301539_961581809177154_5956144819176308295_n.jpg?type=w966" }
-{ text: "건강을 해치면서까지는 하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMzAw/MDAxNzY4MDU5NDE1OTg4.mu_L6ubW_67PBskauforZvcjAN-1vcBOQXGmafWCXCUg.cliDGrLXMI0qLbX95Qn0C88JvfscgG-aEydz3xPgNQcg.PNG/image.png?type=w966" }
-{ text: "자존심을 버려야 얻는 게 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYz/MDAxNzY4MDI3Nzc0NjEz.7vNUpm_oT4Uwo8uP__wkTaj0_p7lXzv-sMof0Z79Mjcg.GZ_Xgu3F85SaMVA4bZTfbohRwFN9kX515tlEKT_jkU4g.JPEG/471509281_585718304056982_7705191075356067814_n.jpg?type=w966" }
-{ text: "뭐야 왜그래?", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODE1OTIw.R5ZCoW8F_-WTE-pFofSMy1BGf4_q-D3SLTD1WCKJb80g.nA26cqarqkDHW-1eeJajGsimaOshJPekPMQPFDZCLb4g.JPEG/538114875_17870281194424655_6886483980754439178_n.jpg?type=w966" }
-{ text: "함정이 있는지 다시 한번 살펴봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI5/MDAxNzY4MDI3NzczMTUz.cKJTXjXqTZbG5Q007ipgqlig82Zg8nZYXjbppxtb2nIg.plOTd4PCLOJAW6vj9gn94NdFCWhinBhne2C773jtW1wg.JPEG/471414903_1240685700520207_4315554218955738866_n.jpg?type=w966" }
-{ text: "함정이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTE4/MDAxNzY4MDYwOTkxMTQ3._ST3rAOAX-DKyrMA9w-2qEyA64DETPMlxItDwEL28Y8g.FtxU7CjRUW4uTIyNdRV5Ga9EHXpcafwgiu2gku8jJeQg.PNG/image.png?type=w966" }
-{ text: "타협할 수 없는 선을 확실히 지켜.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzkg/MDAxNzY4MDI3NzczOTg4.qDzVxCn2ZGYjZjemp7eDCxw0pya3yFS1TLACRqNrPiAg.L1C7DaYC7eXK1HQR7D4QRmP3e2nw3NsYVBiw7LXzZAYg.JPEG/471441005_566068312725886_1160787418089754706_n.jpg?type=w966" }
-{ text: "화를 가라앉히고 냉정하게 다시 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY5/MDAxNzY4MDI3ODM3ODcz.gQbXMlR1Fo0xgmhlzswbv18io59cguGUXco8lxVAwKog.W-pl3qHqqjGeXX-9svhgo-_UEacDDHP_QeybEgItHY8g.JPEG/539351372_17853385158516978_1757827878347898516_n.jpg?type=w966" }
-{ text: "불안함은 마음이 만든 환상일 뿐이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDgg/MDAxNzY4MDI3Nzc2NDI1.n35H0c5c6F63wD2-YyYw0JzF40N3lUvWjR954Kj_vK4g.85c5qV1-gQ49m5Q79X3zGqK4qR2V2t5_vY2mI3l_u5Yg.JPEG/536979207_17853598770515561_8708579493215286295_n.jpg?type=w966" }
-{ text: "너만의 페이스를 유지하는 게 중요해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgg/MDAxNzY4MDI3ODM2MTE2.U3D2m3x5p6D_0L-Mh5wXpWv1l-Hl7rV5z9hL5h7e-3Ug.uB_8c9m7_M2qS7H71hM_n_4fP5x7iXb0Wp2nI6l9wEog.JPEG/538356947_17850541793549247_3840250785640700816_n.jpg?type=w966" }
-{ text: "웃음이 최고의 보약이라는 걸 잊지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNzMg/MDAxNzY4MDI3ODIyNTE3.b6U8n9hN027Qc2c5897t6M89_F4v7jLpE94yO-t9004g.X48Kz54h1P6x4-wH9gR-J5tN0lJ9M26L0H4XqO6I16Yg.PNG/image.png?type=w966" }
-{ text: "어머 웬일이니...", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTMg/MDAxNzY4MDU4NjMzNTE2.82x14P2Hn4n_z-7mP4e2350p9oO-w4r9J1pQ-sF4TjIg.Qj50h36GgJ7fK_X-rQ79uYjM793gWfD5gC6zK83mU5Eg.JPEG/510103289_17857265275445253_2922159837910072522_n.jpg?type=w966" }
-{ text: "너 자신의 행복을 1순위에 둬.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3Nzc1MzYx.6p5tQv8rX9bY_P-d3bM1P_kM-32L6eWk9Dq-U878xMgg.67f_U3jY2iM42O64Fv9u9V8o5_KzY46_555iV8f7_jIg.JPEG/471578330_17869140455428518_7110915174005898864_n.jpg?type=w966" }
-{ text: "나나 잘하자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTMz/MDAxNzY4MDU5Mzk1NjIz.K20eYyS_M1H5Hh3nS6h83l5Kj781KjS_1F86V-v9c1cg.yFp0Tq2rUqL8R3d4H97f37Nn1U4h7q0M11_Nf5zKq_Ig.PNG/image.png?type=w966" }
-{ text: "지난 실수에 너무 연연하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYy/MDAxNzY4MDI3ODM3Mzgx.3wKjW8K72s7k0T1wM3u7Y1gWfF3T1Qy5m-rE0Q3JvJMg.44VzU80gX-M6lGg40561c2u3sYm82_sI-Y897pE3V0kg.JPEG/539129524_17856572712497697_7185584879035415383_n.jpg?type=w966" }
-{ text: "마음이 가장 편안한 쪽을 선택해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTEw/MDAxNzY4MDU5MjY4NDky.9F-bQ-0-x9gJk_GzJpS8Y76_2j8N69w0x21bY8-5l6Mg.b8K22oQ_W5b-qg2l03gK82g1zW7_wH1i_85fJ31vD9Ig.PNG/image.png?type=w966" }
-{ text: "오늘은 스스로를 아낌없이 칭찬해 줘.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcz/MDAxNzY4MDI3Nzc2NDI4.VbL4h8R7cWqB153-fK0Y_452hS-y_t7tWk-9p3Y8nKog.y8s9xKx2H1X0f2Y4eG9-r-gWn-f-Y-7kS-38eU0zL_Eg.JPEG/536980838_17856572970497697_1052605382218760086_n.jpg?type=w966" }
-{ text: "너무 심각할 필요 없어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc1/MDAxNzY4MDI3ODE1NzIy.P3h_Pq3_1iUv37Q_R8c7k8kQeS4s2Qn_d28HlH18-vYg.6kF3x21h4b4U5n2_19hQjP5k8RkU2D1G_87U2-rD50kg.JPEG/538023773_17849635926541372_3126781297594951163_n.jpg?type=w966" }
-{ text: "잘하고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTU5/MDAxNzY4MDI3ODE1NTU2.9sUe67j4Fz9h2D-uN1f-F2b0c4w7K-dG3Xw0-Kx8V9og.d1912gX7P2K9x7Gj5Lg26h2s_i5L3Qy-tL7f75X5c1wg.JPEG/538006619_17853598797515561_8789505876352998394_n.jpg?type=w966" }
-{ text: "먼저 모범을 보여줘.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY3/MDAxNzY4MDI3ODM3NTIx.b5j_l77kSj1V90Wp_g7D7y18_p5_n-Y8J2N48h1Q3oYg.W1m7P713hDk1z_36F1wVw_70_qS1V8W7J_9u5A1Z4xsg.JPEG/539247656_17856573030497697_8366967566164287841_n.jpg?type=w966" }
-{ text: "협력하는 법을 배워야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYw/MDAxNzY4MDYxMTEzMzY3.l-bS6G3yv05Xq0WlD1NfD19TjW-5r_v0o1GzO-7vC04g.j6X9e3s4xS99p_t5W7D_q0M09x6x4g-W8r_1H4lVvXMg.PNG/image.png?type=w966" }
-{ text: "기회를 잡을 준비를 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjAg/MDAxNzY4MDYwOTY1Mjc4.K5dK_E8j2c1JbQ2u7n9r706mK4f_o3TfXvT7O9iY0Lwg.Lq9D_5Vn8uE0W_1lW8uM2g2I0Zg-d0Q_1q9qO5P7M4Ug.PNG/image.png?type=w966" }
-{ text: "홀리지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjM2/MDAxNzY4MDI3ODE2Mjcz.g3Tq0eF2hT8HlYm6Kz3pWl-8g0vXv6kR_s8_2kG647wg.F5v-e7Z4c7-1x8gV8D9d-8j7f47X4p5o2n4g-w4qG9Ag.JPEG/538186105_17851842144533033_3886566088235288597_n.jpg?type=w966" }
-{ text: "집중력이 필요한 시점이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQ3/MDAxNzY4MDU5MjY2MDM1.s1w8n2E6L9C7t-1m0m5L3m7_z6kK_7_1w7F6H6I6w7w.g9yqK_XgD5r1c5z7k5l6G5k9F2p6V5s1g8w_6k9p8zIg.PNG/image.png?type=w966" }
-{ text: "정신줄 잡아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA4/MDAxNzY4MDU4NjMzNzE4.c9P9q6zH8K2f5K7r6Q2S9C5i9q5V6v5m6v5q6g5w6-5m.9w7q5l6g2n1t5J9c6N7D5D9x8r5s7g7u2e7q5w6-5u.JPEG/502334812_17858459031441705_806548545814032394_n.jpg?type=w966" }
-{ text: "세부 사항에 너무 집착하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjA3/MDAxNzY4MDI3ODM3MzQ3.A8z7s4m6B6R5F6Z2L0n4k5_1V7w1t5X6z1h2X0H3S1Q0g8w_8S8u5v4I9j5e9r7w.4w2Q5j9K4d3k9r8v1k3r9H6q4M6S7H3E4i1L8i5v3f5l6L0n6q8R9B8o.JPEG/539097728_17857265147445253_8180352528731139454_n.jpg?type=w966" }
-{ text: "전체적인 그림을 먼저 그려봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTcg/MDAxNzY4MDI3NzczOTU2.1l0N7k8g6T3V8j8x7i5M9v7G4e5l8f6h5g9o6q5x7z7b6d7x7t7_9f9f.k_2f_4l3J1h9u8X2w3d0U5G3H2I1B0V7C3D5E4F5G6I7J8L9N1P3R4T.JPEG/471439209_1241151608985953_4490710777552955519_n.jpg?type=w966" }
-{ text: "남과 비교하는 건 멈춰.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODE2MjQw.1v7f0i1v5B8m7_1p5_3v4h2L1K5X2j4R3f5_6k7x8_9b1g5B8G0q6C4E7_9V4r2G4T6f9h.k_7l3M8R6T3i7d2w6F1n3D7P4E6K5I8_7b4w5m1B6S9K7N8L.JPEG/538167761_17857265163445253_4526563600980486001_n.jpg?type=w966" }
-{ text: "그걸 질문이라고..?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQ3/MDAxNzY4MDU4NjM0MzM4.2o4S2m5t9T2p7l4h3q4L2p0m6T9y6F8A5k9x7G8D5l6e8n7i6l8o6k3V6m7S.9f9k3U6m8x2a6O9b8y5V8H7R9u4Y0s1n3d5q2r4K7w5p.JPEG/502392471_17857265219445253_3266205465135246738_n.jpg?type=w966" }
-{ text: "가슴이 뛰는 쪽을 선택해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODM3Mzk3.3i4T6m9p6j7X8k2q1_2f4D5C2N4G6L8_9S7W2q4b6u3i7_9z7a8_5q7q6j7s8v6m8x3C.4g2J3i4L6N8U2f1b4a6k2h3w4m6D8q0p3c7d1e8v9B5K.JPEG/539169493_17857265146445253_8065251649666046467_n.jpg?type=w966" }
-{ text: "냉정하게 상황을 분석해야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYw/MDAxNzY4MDU5MjY4NDY2.0n6i8p4s1f6G9P2I7k5L3n6Q4U8Y2m4L7e1l5r9t5w7k3y6f8p4e5v9w7q.0a2S4m8Y2e4b3q5i0q3L7z9p5k8v1o5x3z6J4E2i5s.PNG/image.png?type=w966" }
-{ text: "안할거니?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTAw/MDAxNzY4MDU5NTg5MzM5.d-K5t7F6c5n3i1p5b9H2c8N7T5E7K4F2j9S4p6y0Q5t8g9d6m7o5q8P2u6k7_7c.9f1y2J7H5F3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "아; 아니.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQx/MDAxNzY4MDU5MjY2MDcx.o9G8H5L4h6l2m5k9J7e6u3g1v5s2u0q8X7z9d0k2z4g7q8x5v9w6e4r9w6q.2j7_3j5f7m9l3N8P1q4K6S5m7r0c4z9p5k8o2Q4U7t9r6x.PNG/image.png?type=w966" }
-{ text: "아는 길도 물어가는 게 안전해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODE2MjI2.s9yC0e3X8Q6O4W2V9p7h2b1E5G3j8l5m9w6q5w6r8z6o2R3g5b.w1q8O2j5m7q4p6F9g3N7i0o8v4j9l2k5z7h2a5w4i.JPEG/538158019_17853598793515561_8642055620959450373_n.jpg?type=w966" }
-{ text: "겸손함이 운을 불러올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYy/MDAxNzY4MDI3ODM2NDY2.A0xG5T7k2h6p4w0i5u2b7q6y9v5j8c7f3e5p7r9t0q5_2b4w.4p7s9g1k5X4d3b6f0h7t9r4y5p8w3v1k4f6j7l9m2D8E.JPEG/538600000_17857265266445253_6455291244437299097_n.jpg?type=w966" }
-{ text: "때로는 포기하는 것도 용기야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIg/MDAxNzY4MDI3Nzc1NDM1.q7b4w0h8F2t6j9L5z8m1q4R5_7W2h4r8U1p4x5e2b4i6u3k8x4i9q7t3f.9f6_0i4a8r5p3L7w5t9B2G4K5W7T3i6k8z0m4v9c.JPEG/471597816_1248066532252530_3148108139599577771_n.jpg?type=w966" }
-{ text: "한 우물만 깊게 파는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjgg/MDAxNzY4MDI3ODM2MjU4.V7q9Z3e1g5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.JPEG/538495940_17849635914541372_6150244799014168051_n.jpg?type=w966" }
-{ text: "자신의 한계를 시험해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNzQg/MDAxNzY4MDI3ODM3NjAy.2y4m7l6q8z4f7c1g5d9V0h6n2I4k5o8s7u3x6y0t4b7q9g3j6l8o3D5E.8i6w4m8x9z4g2k6p1r7s5u0C4X6R3I5W7Q4S.JPEG/539249767_17857265207445253_188047970894520790_n.jpg?type=w966" }
-{ text: "두려움에 당당히 맞서 싸워.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3Nzc0ODUw.9b3i0h6y1k4T7w5_2f8k4P6v9J2s1e3n6q8z4a7f6l8o3C5E7H9J2s4m.6o9h4w2n7f1a3g5t8x0c4u6Q8r1D5F9L7N.JPEG/471549429_1253457102409747_6782787884483321528_n.jpg?type=w966" }
-{ text: "즐기는 자를 이길 수 없어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIg/MDAxNzY4MDI2OTkyOTc4.1k6n2j4r3w5h6m7u0C2T4w5_2f7D5K8R6U9W0s3e5b8j6l7_8p.1r7s5u3k7g0n4u9w1r4_8j7a5y0D4F7K9M2Q.JPEG/470953684_657930198886915_4237198762512613589_n.jpg?type=w966" }
-{ text: "긍정의 에너지를 전파해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjM2/MDAxNzY4MDI3ODIyNDMw.4n6g8k0u1k7F5E9U3l4w7m9j5y2_4e1a6k3p5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.PNG/image.png?type=w966" }
-{ text: "말의 무게를 신중히 느껴봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjAg/MDAxNzY4MDU5MjY2MDMx.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.9f1y2J5H7F3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "바로 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjI3/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "할 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjIy/MDAxNzY4MDU5NTg5MzY0.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.PNG/image.png?type=w966" }
-{ text: "복잡한 문제는 쪼개서 생각하자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3Nzc1MTE3.3m1n6q8x0u2w4y6e3c5e8f0i4l6m9q2w5i8e3r1v6u9t4w0i5y.6e7k2h3i4j5l6n8q0t2w4y6e3c5e8f0i4l6m.JPEG/471573030_1235450893181528_5628678074984281358_n.jpg?type=w966" }
-{ text: "핵심을 찌르는 결단이 필요해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY3/MDAxNzY4MDI3Nzc2OTgy.8n7r5u1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.w1q8O2j5m7q4p6F9g3N7i0o8v4j9l2k5z7h2a5w4i.JPEG/537217592_17847308112503376_8435889758273617196_n.jpg?type=w966" }
-{ text: "상상력을 마음껏 발휘해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODM2NDY2.0n6i8p4s1f6G9P2I7k5L3n6Q4U8Y2m4L7e1l5r9t5w7k3y6f8p4e5v9w7q.1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.JPEG/538600000_17857265266445253_6455291244437299097_n.jpg?type=w966" }
-{ text: "현실에 발을 붙이고 판단해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc2/MDAxNzY4MDI3Nzc2NDI1.s1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.JPEG/536979207_17853598770515561_8708579493215286295_n.jpg?type=w966" }
-{ text: "꿈을 크게 가져도 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTEw/MDAxNzY4MDU5NDY1NTgy.1i4l6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "행동은 민첩하게 해야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY2/MDAxNzY4MDI3ODM2MTY4.2r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.JPEG/538410712_17856573033497697_2368149861971714397_n.jpg?type=w966" }
-{ text: "생각은 깊게, 결정은 빠르게.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTIy/MDAxNzY4MDI3ODM4MzA3.9v5j8c7f3e5p7r9t0q5_2b4w.6d7g1k4f6j7l9m2D8E.JPEG/539493863_17856572719497697_8003666579301035510_n.jpg?type=w966" }
-{ text: "마음을 넓게 쓰는 게 이득이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcy/MDAxNzY4MDI3ODE0Njk5.p5k8v1o5x3z6J4E2i5s.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.JPEG/537775988_17853598782515561_1669460599187309990_n.jpg?type=w966" }
-{ text: "자신에게 조금 더 관대해져 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODM3MzQ3.A8z7s4m6B6R5F6Z2L0n4k5_1V7w1t5X6z1h2X0H3S1Q0g8w_8S8u5v4I9j5e9r7w.9j2k5m7r0u3_6e4f6j8l9m1n3q5w7z.JPEG/539097728_17857265147445253_8180352528731139454_n.jpg?type=w966" }
-{ text: "타인에게 너무 엄격해지지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjg3/MDAxNzY4MDI3ODM2NzY4.4t7v9x2k5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.JPEG/538902099_17853598792515561_8708579493215286295_n.jpg?type=w966" }
-{ text: "눈앞의 인연을 소중히 여겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTE4/MDAxNzY4MDU5MjY2MDcx.o9G8H5L4h6l2m5k9J7e6u3g1v5s2u0q8X7z9d0k2z4g7q8x5v9w6e4r9w6q.3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "지난 일은 미련 없이 잊어버려.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUz/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "다가올 미래를 차분히 대비해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI5/MDAxNzY4MDI3Nzc1MzY0.4e6k8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.JPEG/471580975_1253457107755747_6782787884483321528_n.jpg?type=w966" }
-{ text: "현재를 즐기는 게 최고의 선택이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODE1NzIy.P3h_Pq3_1iUv37Q_R8c7k8kQeS4s2Qn_d28HlH18-vYg.9j2k5m7r0u3_6e4f6j8l9m1n3q5w7z.JPEG/538023773_17849635926541372_3126781297594951163_n.jpg?type=w966" }
-{ text: "사랑과 관심을 아끼지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ0/MDAxNzY4MDI3ODM4NDkx.7j6l8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.JPEG/611598918_17872939762408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "배려가 곧 너의 실력이 될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQw/MDAxNzY4MDI3ODE1OTk3.2k5m7r0u3_6e4f6j8l9m1n3q5w7z.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.JPEG/538118023_17853598788515561_8708579493215286295_n.jpg?type=w966" }
-{ text: "자신만의 철학을 확고히 가져.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc1/MDAxNzY4MDI3ODE0Nzk3.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.JPEG/537805174_17856573027497697_7185584879035415383_n.jpg?type=w966" }
-{ text: "최고다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk5/MDAxNzY4MDI3ODM4NTY1.3l4w7m9j5y2_4e1a6k3p5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.JPEG/611804245_17872939753408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "그냥 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjY4/MDAxNzY4MDU5NDY1NTc4.2h3i4j5l6n8q0t2w4y6e3c5e8f0i4l6m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "거짓말은 결국 드러나게 돼 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI5/MDAxNzY4MDI3ODM3NTY5.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.4t7v9x2k5r8t9w5q6h7m8i3x.JPEG/539257617_17853385157516978_1757827878347898516_n.jpg?type=w966" }
-{ text: "스스로를 어필해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQx/MDAxNzY4MDI3ODE1NzIy.P3h_Pq3_1iUv37Q_R8c7k8kQeS4s2Qn_d28HlH18-vYg.9j2k5m7r0u3_6e4f6j8l9m1n3q5w7z.JPEG/538023773_17849635926541372_3126781297594951163_n.jpg?type=w966" }
-{ text: "지켜봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODM4NDkz.7j6l8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.JPEG/611598918_17872939762408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "어이구야야", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk5/MDAxNzY4MDI3ODM4NTY1.3l4w7m9j5y2_4e1a6k3p5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.JPEG/611804245_17872939753408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "생각하지 못한 방향으로 갈거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA4/MDAxNzY4MDU4NjMzNzE4.c9P9q6zH8K2f5K7r6Q2S9C5i9q5V6v5m6v5q6g5w6-5m.9w7q5l6g2n1t5J9c6N7D5D9x8r5s7g7u2e7q5w6-5u.JPEG/502334812_17858459031441705_806548545814032394_n.jpg?type=w966" }
-{ text: "운동은 절대 너를 배신하지 않아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYy/MDAxNzY4MDI3ODM3Mzgx.3wKjW8K72s7k0T1wM3u7Y1gWfF3T1Qy5m-rE0Q3JvJMg.44VzU80gX-M6lGg40561c2u3sYm82_sI-Y897pE3V0kg.JPEG/539129524_17856572712497697_7185584879035415383_n.jpg?type=w966" }
-{ text: "자연 속에서 마음을 치유해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUz/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "흔들리지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjM2/MDAxNzY4MDI3ODIyNDMw.4n6g8k0u1k7F5E9U3l4w7m9j5y2_4e1a6k3p5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.PNG/image.png?type=w966" }
-{ text: "질투하지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA0/MDAxNzY4MDU5NDY1NTY5.5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.PNG/image.png?type=w966" }
-{ text: "도전하는 모습이 가장 아름다워.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ0/MDAxNzY4MDI3ODM4NDkx.7j6l8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.JPEG/611598918_17872939762408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "실패는 성공을 위한 밑거름이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjA5/MDAxNzY4MDU4NjMzMzg5.yzNHMSqVTGGjF59o-lAh2o0lPzi1iZ9r76mrkAA_M18g.scNQPxuVWY0kJHX9k1I7PG9S6GAGLdR3-BBw2iM8C5gg.JPEG/509371049_17847308121503376_582685732200797260_n.jpg?type=w966" }
-{ text: "너는 무한한 가능성을 가지고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg2/MDAxNzY4MDI3ODM3NTIx.b5j_l77kSj1V90Wp_g7D7y18_p5_n-Y8J2N48h1Q3oYg.W1m7P713hDk1z_36F1wVw_70_qS1V8W7J_9u5A1Z4xsg.JPEG/539247656_17856573030497697_8366967566164287841_n.jpg?type=w966" }
-{ text: "스스로의 가치를 더 높게 잡아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjAg/MDAxNzY4MDYwOTY1Mjc4.K5dK_E8j2c1JbQ2u7n9r706mK4f_o3TfXvT7O9iY0Lwg.Lq9D_5Vn8uE0W_1lW8uM2g2I0Zg-d0Q_1q9qO5P7M4Ug.PNG/image.png?type=w966" }
-{ text: "쉬엄쉬엄해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjkg/MDAxNzY4MDU5NDIxNzI5.8vzujZhkM6Jx03t_7eQ51CP5XJe1PAkJd0GuN4lbbxYg.nN6ByNve6XZuJFR6IVDq741MbqsdhzgDU86MZMKBVMUg.PNG/image.png?type=w966" }
-{ text: "골치아파진다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTE4/MDAxNzY4MDYwOTkxMTQ3._ST3rAOAX-DKyrMA9w-2qEyA64DETPMlxItDwEL28Y8g.FtxU7CjRUW4uTIyNdRV5Ga9EHXpcafwgiu2gku8jJeQg.PNG/image.png?type=w966" }
-{ text: "건강을 잃으면 다 잃는 것과 같아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMzAw/MDAxNzY4MDU5NDE1OTg4.mu_L6ubW_67PBskauforZvcjAN-1vcBOQXGmafWCXCUg.cliDGrLXMI0qLbX95Qn0C88JvfscgG-aEydz3xPgNQcg.PNG/image.png?type=w966" }
-{ text: "우정을 진심으로 소중히 가꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODE2MjI2.s9yC0e3X8Q6O4W2V9p7h2b1E5G3j8l5m9w6q5w6r8z6o2R3g5b.w1q8O2j5m7q4p6F9g3N7i0o8v4j9l2k5z7h2a5w4i.JPEG/538158019_17853598793515561_8642055620959450373_n.jpg?type=w966" }
-{ text: "가족은 너의 가장 큰 버팀목이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjg3/MDAxNzY4MDI3ODM2NzY4.4t7v9x2k5r8t9w5q6h7m8i3x.9d1f3k6l8p9r4v6w8_5b7d9g2k4n7r0u3_6e.JPEG/538902099_17853598792515561_8708579493215286295_n.jpg?type=w966" }
-{ text: "오늘 하루를 보람차게 채워봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODE1NzIy.P3h_Pq3_1iUv37Q_R8c7k8kQeS4s2Qn_d28HlH18-vYg.9j2k5m7r0u3_6e4f6j8l9m1n3q5w7z.JPEG/538023773_17849635926541372_3126781297594951163_n.jpg?type=w966" }
-{ text: "매 순간 최선을 다하는 게 정답이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEz/MDAxNzY4MDI4OTQyMzky.oX1f2XZwvLcfIbX1ScAYaObDtnziDvYT_EmjPgcNXm4g.7jOOtQtSUm4QTDDNHvEf_RMu_Dh226KrhbHJw3QJqrEg.PNG/image.png?type=w966" }
-{ text: "후회 없는 삶을 살기 위해 노력해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTEw/MDAxNzY4MDU5MjY4NDky.9F-bQ-0-x9gJk_GzJpS8Y76_2j8N69w0x21bY8-5l6Mg.b8K22oQ_W5b-qg2l03gK82g1zW7_wH1i_85fJ31vD9Ig.PNG/image.png?type=w966" }
-{ text: "밝은 미래가 너를 기다리고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ3/MDAxNzY4MDI3ODM3ODU3.tIqAsn7cssSfQtNNebushgo_f7vbNaWFJT4vwk2XsG8g.CGbJP1fsLLFRCJMfHVjRh7eHPNQK-5l4Qp34imvR1yYg.JPEG/539301248_17879289753385054_5203923026081307444_n.jpg?type=w966" }
-{ text: "일단 참여해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYw/MDAxNzY4MDYxMTEzMzY3.l-bS6G3yv05Xq0WlD1NfD19TjW-5r_v0o1GzO-7vC04g.j6X9e3s4xS99p_t5W7D_q0M09x6x4g-W8r_1H4lVvXMg.PNG/image.png?type=w966" }
-{ text: "포기하고 싶을 때 한 번 더 버텨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTkw/MDAxNzY4MDI3ODM4MzQw.0tUnrqXGr_2ewjvnFbhNz8kvcK2_2HjjEUUY3y0bQxgg.ZZsFQsu41r0JwRennYoj-YHN_tKmOX46oSOOOalwBsIg.JPEG/610854819_17879544036449975_8363717810572267257_n.jpg?type=w966" }
-{ text: "최종 승리는 인내하는 자의 것이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI5/MDAxNzY4MDI3ODM2MTY4.2r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.JPEG/538410712_17856573033497697_2368149861971714397_n.jpg?type=w966" }
-{ text: "자신을 사랑하는 것부터 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQx/MDAxNzY4MDU5MjY2MDcx.o9G8H5L4h6l2m5k9J7e6u3g1v5s2u0q8X7z9d0k2z4g7q8x5v9w6e4r9w6q.3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "긍정은 기적을 만드는 힘이 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODM4NDkx.7j6l8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.JPEG/611598918_17872939762408413_2827475370578744903_n.jpg?type=w966" }
-{ text: "좋은 결과가 있겠네.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjY4/MDAxNzY4MDU5NDY1NTc4.2h3i4j5l6n8q0t2w4y6e3c5e8f0i4l6m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "밝게 웃으며 당당하게 살아가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUz/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "행운은 이미 네 편이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjAg/MDAxNzY4MDYwOTY1Mjc4.K5dK_E8j2c1JbQ2u7n9r706mK4f_o3TfXvT7O9iY0Lwg.Lq9D_5Vn8uE0W_1lW8uM2g2I0Zg-d0Q_1q9qO5P7M4Ug.PNG/image.png?type=w966" }
-{ text: "결국 모든 것이 다 잘 될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA0/MDAxNzY4MDU5NDY1NTY5.5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.PNG/image.png?type=w966" }
-{ text: "포기하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjI3/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "너의 열정을 믿고 나아가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjIy/MDAxNzY4MDU5NTg5MzY0.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.1r3t5w0d2g4k7o9q2w4y7_3f6k8o1p4s7u0C2T.PNG/image.png?type=w966" }
-{ text: "한계는 네가 정하는 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjY4/MDAxNzY4MDU5NDY1NTc4.2h3i4j5l6n8q0t2w4y6e3c5e8f0i4l6m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "서두르지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUz/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "쉬어가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQx/MDAxNzY4MDU5MjY2MDcx.o9G8H5L4h6l2m5k9J7e6u3g1v5s2u0q8X7z9d0k2z4g7q8x5v9w6e4r9w6q.3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "말도 안돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA0/MDAxNzY4MDU5NDY1NTY5.5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.PNG/image.png?type=w966" }
-{ text: "배려하는 마음이 너를 빛내줄 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjY4/MDAxNzY4MDU5NDY1NTc4.2h3i4j5l6n8q0t2w4y6e3c5e8f0i4l6m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "너의 매력을 충분히 발산해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQx/MDAxNzY4MDU5MjY2MDcx.o9G8H5L4h6l2m5k9J7e6u3g1v5s2u0q8X7z9d0k2z4g7q8x5v9w6e4r9w6q.3e8_1h4g0Q3_7b5w9v0i5r2q4W9C6U7S.PNG/image.png?type=w966" }
-{ text: "겸손함은 가장 큰 무기야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYz/MDAxNzY4MDU5MjY3Nzg0.9r5u3k7g0n4u9w1r4_8j7a5y0D4F7K9M2Q.6e3c5e8f0i4l6m9q2w5i8e3r1v6u9t4w0i5y.PNG/image.png?type=w966" }
-{ text: "오늘보다 나은 내일이 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMzAw/MDAxNzY4MDU5NDE1OTg4.mu_L6ubW_67PBskauforZvcjAN-1vcBOQXGmafWCXCUg.cliDGrLXMI0qLbX95Qn0C88JvfscgG-aEydz3xPgNQcg.PNG/image.png?type=w966" }
-{ text: "이거 안될 거 같은데요?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjE1/MDAxNzY4MDU5NjE5MjM0.2j8eSYylG3gl_XcALcZZFehcs0C2VK0pVQqXhmcBijYg.e7_urzcNsvG9-io6X2HVcUc6bk0bH7HGB7v-4eJhA1kg.PNG/image.png?type=w966" }
-{ text: "용기 있는 선택이 운명을 바꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjAg/MDAxNzY4MDYwOTY1Mjc4.K5dK_E8j2c1JbQ2u7n9r706mK4f_o3TfXvT7O9iY0Lwg.Lq9D_5Vn8uE0W_1lW8uM2g2I0Zg-d0Q_1q9qO5P7M4Ug.PNG/image.png?type=w966" }
-{ text: "너의 노력을 소중히 여겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA0/MDAxNzY4MDU5NDY1NTY5.5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.PNG/image.png?type=w966" }
-{ text: "세상은 넓고 할 일은 많아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYz/MDAxNzY4MDU5MjY3Nzg0.9r5u3k7g0n4u9w1r4_8j7a5y0D4F7K9M2Q.6e3c5e8f0i4l6m9q2w5i8e3r1v6u9t4w0i5y.PNG/image.png?type=w966" }
-{ text: "너만의 색깔을 잃지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjIz/MDAxNzY4MDU5Mzk1NjIz.K20eYyS_M1H5Hh3nS6h83l5Kj781KjS_1F86V-v9c1cg.yFp0Tq2rUqL8R3d4H97f37Nn1U4h7q0M11_Nf5zKq_Ig.PNG/image.png?type=w966" }
-{ text: "진심은 반드시 통하게 되어 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQ3/MDAxNzY4MDU5MjY2MDM1.s1w8n2E6L9C7t-1m0m5L3m7_z6kK_7_1w7F6H6I6w7w.g9yqK_XgD5r1c5z7k5l6G5k9F2p6V5s1g8w_6k9p8zIg.PNG/image.png?type=w966" }
-{ text: "눈치보지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYz/MDAxNzY4MDU5MjY3Nzg0.9r5u3k7g0n4u9w1r4_8j7a5y0D4F7K9M2Q.6e3c5e8f0i4l6m9q2w5i8e3r1v6u9t4w0i5y.PNG/image.png?type=w966" }
-{ text: "아름다운 결말이 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjI3/MDAxNzY4MDU5NDY1Njk4.0h5l1s4k7_8p0t2w5e6k3o7_9w6r8z0C4E6H7K9M2Q4T.4w7l3n0m5k2p6r8u0t1w4e5k3i7l9w6r8z0C4E6H7K9M2Q4T.PNG/image.png?type=w966" }
-{ text: "부러워하지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTA0/MDAxNzY4MDU5NDY1NTY5.5d8T6j2l9w4k8t7f4r9W1s3E6_0k2y5o3f6g8x1C9G5I3K.9i7s6h4w8o1k4_9b2d0f5V7S3_6e5r8o1k3B7D5M8K.PNG/image.png?type=w966" }
-{ text: "기대해도 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTQ3/MDAxNzY4MDU5MjY2MDM1.s1w8n2E6L9C7t-1m0m5L3m7_z6kK_7_1w7F6H6I6w7w.g9yqK_XgD5r1c5z7k5l6G5k9F2p6V5s1g8w_6k9p8zIg.PNG/image.png?type=w966" }
-{ text: "한 번의 성공이 모든 걸 바꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjEz/MDAxNzY4MDU5NDY1NTgy.1i4l6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.7h4k6m9q2w5i8e3r1v6u9t4w0i5y2e4f6k8o3C5E7H9J2s4m.PNG/image.png?type=w966" }
-{ text: "완전 잘될듯.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTMz/MDAxNzY4MDU5Mzk1NjIz.K20eYyS_M1H5Hh3nS6h83l5Kj781KjS_1F86V-v9c1cg.yFp0Tq2rUqL8R3d4H97f37Nn1U4h7q0M11_Nf5zKq_Ig.PNG/image.png?type=w966" }
-{ text: "응.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTYz/MDAxNzY4MDU5NDIxNzI0.oH4V2v7P9S6k3y5f8h0i1s4k7_8p0t2w5e6k3o7_9w6r8z0C.3w7k4m9r6u2f4d6g1k4f6j7l9m2D8E.PNG/image.png?type=w966" }
+                { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI3/MDAxNzY4MDI3ODM2MTgx.MuLSUXwAZle7fjBemO8LEtGaCIaID-mWzvsDbIi73Eog.0QeVyljzk4CufcXxyIaayZ-e7Ywbc5FOVmHbqaX5100g.JPEG/538416297_17851842099533033_5727223327477060302_n.jpg?type=w966" },
+                { text: "망설임 없이 추진하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA0/MDAxNzY4MDI3NzczNDI3.3L44FLKBJUAUpZ2hOBipxQszwQ4P2YVZR84bL6axFa8g.bBNIrx4uR2kQCSyuY2hn8rLbe7lgQreMQOB6IQKo91Eg.JPEG/535233954_17852451489526798_4826593954940652736_n.jpg?type=w966" },
+                { text: "무조건 찬성이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg2/MDAxNzY4MDI2OTkyMTg0.0GamBmUBUR7WIxFWw4smrByfo6CAyQ6ooyIm0rKIUVcg.E1rhKJmJoflLtA6zDa5wxRvOSwGvQG-Tmq7dKU48Eugg.JPEG/470897241_933755445395549_2158590266263032538_n.jpg?type=w966" },
+                { text: "아주 좋은 결과가 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDgg/MDAxNzY4MDI3NzczMDM4.woNijVUPFc6tpveRYH78OZTLeYC0nvHoCKfsbg625BAg.IFBWXJY42RrrLQxmXtbVu_6UHsRWemCWyE6KfdpKxuAg.JPEG/534824445_17874552720406974_5120271598709001187_n.jpg?type=w966" },
+                { text: "당장 오케이.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTYg/MDAxNzY4MDI2OTk1NDU1.Uv31KZFSV8DrDJXhAq4zxymDmvwpJM5s39u0muxlsG4g.4OMxwUarUCe5sYHT2kaJ0XCix7bDoTHGEclroR_AYDsg.JPEG/471378591_529023233456554_4732027502285247680_n.jpg?type=w966" },
+                { text: "너 자신을 믿고 밀고 나가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk1/MDAxNzY4MDI2OTkyMTcz.pO0_jNo2-1qiE9qsdMi0CD28bCh86lzUmZt4kxbjIP4g.IIAlXZtKobUeN_V4QF3vW3Hnmr6X_luDQY8fxZHNoSgg.JPEG/470902469_1810082033085995_1712473540673241452_n.jpg?type=w966" },
+                { text: "충분히 가치 있는 일이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTAz/MDAxNzY4MDI2OTk0OTg0.5TUEE_861snZULDvunXSexsJ2ZFOzUhGWgVjj3N5HXIg.i2S6WABPuKh-yUkZRq9Z_Gv8WS-OGirtRyrYSRel9L8g.JPEG/471331023_571473035524958_5256801507454861067_n.jpg?type=w966" },
+                { text: "가능성이 아주 높아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk4/MDAxNzY4MDI2OTkyNTMz.Ymn4UEXX957hchyj4LEscK3-7Jajxa5s2G6ggAMp0gYg.tpS3wCp9eugMdAJQFJKkzQC5LYWueV1aLKr0N5bKqiUg.JPEG/470923712_1812859286196870_60095713845230327_n.jpg?type=w966" },
+                { text: "하늘이 주는 기회야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAx/MDAxNzY4MDI2OTk0ODY4.EFp6WADbXUmLnkL4s1EQJhXewuRt5ARfJMasu_Bc8XEg.rktLiChjKg5LZMfmFzH0pum1HdIEi6ymt5aE2xAtsD8g.JPEG/471328144_936503011810193_7201108742479970214_n.jpg?type=w966" },
+                { text: "적극적으로 참여해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTY4/MDAxNzY4MDU5NjAwODE3.heLasUBNWe7dC6v4hyFgaHkRGlyKaoMtzlS4XdHXy-kg.42xtQiqubLEeBRUQjdIUZCf6ckyHVoF6sQKPsp6T2lUg.PNG/image.png?type=w966" },
+                { text: "지금은 절대 안 돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYz/MDAxNzY4MDI2OTkzMjYy.nXLL5yy3c7Cg9m-luSStvVhZavrXfsQiu34IHvkyxqIg.ZmXqVbO6yXPi-uodFYTP7luZ96gmEvaUsyArR0LDJDMg.JPEG/470972923_1331097318302838_8937970382440651867_n.jpg?type=w966" },
+                { text: "조금 더 신중할 필요가 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM1/MDAxNzY4MDI2OTkyNTc2.dJK1lchE2uAZLFCEI116myO3xWWCrqmliD4u2M3m1SQg.VBT5EgOihZ32amfuBvuKM-vJmIiEk4k4tN5c5RyEQnkg.JPEG/470945457_900125468901685_766869907940447039_n.jpg?type=w966" },
+                { text: "다시 한번 재고해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIx/MDAxNzY4MDI2OTkzMTEw.iWAGpw9R32Mr95OMpHrXoxCtyNE8S77PiVmcyy8JzX0g.KwGNEFh2-Z2fGL1vuiRuofyhvybKq_aXJ2nxBnv3wkwg.JPEG/470971345_3970017409940054_4919446038062051747_n.jpg?type=w966" },
+                { text: "위험 부담이 너무 커.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTUg/MDAxNzY4MDI2OTk0NjA2.wxF3dmuMhmDbV6mRLMQ4cfTgzvKGHeq4HjHlaEF4op8g.6806pipPpinak58qTcZoWf18YzYt1Jg37hlwWStw2DIg.JPEG/471301539_961581809177154_5956144819176308295_n.jpg?type=w966" },
+                { text: "멈추는 게 상책이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNzcg/MDAxNzY4MDI2OTkyOTQz.9SZDIxXyBQ4Hh43FMi0GW2D9k6vNpYSOMd-ergEF4wog.00eNnjCG0ZKDYhhUVm2fp_B6HQGzuwVWmSaRQV4aQtwg.JPEG/470956471_1871235036740590_2964953443510347879_n.jpg?type=w966" },
+                { text: "안 하는 것이 너에게 이득이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEx/MDAxNzY4MDI2OTkyNTI1.TRNxDxN7whZRMVtX5PNx0W2KLfa02KYhhj5owIx7LsQg.rDMkojasjmy3IkHbDa1OXAglY7MBvMS3N398OdAeMwsg.JPEG/470922918_963180355687371_4723128050973483819_n.jpg?type=w966" },
+                { text: "나중에 후회할 가능성이 높아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTU4/MDAxNzY4MDI2OTkzNjIw.lQ1MVytPGS0qaj5_gG18DkfreKPE1pnpP6byR1d2Egog.8FDNzXSdq0ewnzciNZddFffILnTLPYRK2B4vh5Z31VIg.JPEG/470974330_1112279877044423_452055250905311053_n.jpg?type=w966" },
+                { text: "아직 준비가 덜 되었어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTE5/MDAxNzY4MDI2OTkyMTk4.s6txhVu_2TyNf3DNd0St9fnB-HcyKSG8zixZLDu0DA8g.bdN4meduRWvLACfpyiQW7CMg-5IeuMDiUW9FGGbP6A8g.JPEG/470922752_1252414275840486_471645479466448570_n.jpg?type=w966" },
+                { text: "보류하는 게 좋겠어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM2/MDAxNzY4MDI2OTkzNjU5.dy45nxaPFObx9DLlV41GYCJIDGULpZ6lWLargKrmnRkg.WYYcWA5RbgbaWbBvGWakgoHUp_pmTvkwtfqTvLbc_-wg.JPEG/470975268_553096624208296_1719071591208282498_n.jpg?type=w966" },
+                { text: "단호하게 거절해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNjcv/MDAxNzY4MDI2OTkzNDIw.I69HCQCKC7W1JCTs4KNCKsyF4lR7lhe4xHwZMUm4Y3Eg.RJJSPrGiC5ISugaifEGY5y2ZbMVBNpLuwUX1d54HOoMg.JPEG/470974239_9168155946539767_1129124007189619632_n.jpg?type=w966" },
+                { text: "지금이 가장 완벽한 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDQs/MDAxNzY4MDI3NjY1NzM3.JogoCOE0Bn3FkYHXdqcwh3xI6rTdTn2pVTFc3OCaN-8g.gzMaV9BBV6Zelmdw-OuU7hxmuOes6zg-FU0EwyEVjwkg.PNG/image.png?type=w966" },
+                { text: "조금 더 기다려야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTcv/MDAxNzY4MDI2OTkzMzcx.jpLcUXvs17C6iLejf1z-E1XAw2dkqNlj82uMcNyh4Y4g.q-GcY8Ul23pqzfpu9d0LWv_4cosZ6Cbwps1J1kcFQY4g.JPEG/470974112_572714739050849_4417805313532393688_n.jpg?type=w966" },
+                { text: "내일 아침에 다시 생각해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAy/MDAxNzY4MDI2OTkyMTg2.lZO06-tVa3vmuvsMjjYnOc5lTNDVavHNbFQi9a3leq0g.WEeqEO95T9CwG-C8nIKc4MJ9kFAh7PMbPT894eaW6hIg.JPEG/470920439_451831314448323_2573376562774598034_n.jpg?type=w966" },
+                { text: "한 박자 쉬고 다시 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk2/MDAxNzY4MDI2OTk0NjM0.cS_2JAzICVLd2fJi5iT76dDVpRnk2imyCFA_YMa_r2Yg.V-AfBk_-sxRjAiRwEbNdo9bNoejCnFws92kPlTY6ppUg.JPEG/471310124_946103223636665_4229692479503432217_n.jpg?type=w966" },
+                { text: "기회는 바로 지금뿐이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM4/MDAxNzY4MDI3ODEzNzgw.UQCWCFNyZbL6iSJXk3bbaem3Nodg-_oiG6o6rYcCAIAg.lKdt8wT5YCKlwwIsEJNe20Z8G0GHE7b39Eepm0WGNDYg.JPEG/537483413_17856572802497697_2933317071625054341_n.jpg?type=w966" },
+                { text: "폭풍이 지나가길 기다려.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjU0/MDAxNzY4MDI2OTk0NjAy.C4k1MUVsTwxrbXXVVl1utI-46DiNZfg08cg5ufFlsB0g.gnfD_LK27lqYRPMaaLSkCOy1ap0nZU717n39TLq0K1Eg.JPEG/471309639_1350748882596482_8324765789218367793_n.jpg?type=w966" },
+                { text: "너무 서두르면 일을 그르쳐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTEg/MDAxNzY4MDI3Nzc1Nzc0.uDJrlcm4nfQ_2iPILM6jW69BC0UoIwbBgZK_l4AnstUg.VCrMRhpyYecOFSaxWEy_2knyREpsx934wKRAP-rKiVgg.JPEG/535839454_17890805799316529_1445851407807870432_n.jpg?type=w966" },
+                { text: "적절한 시기를 이미 지나쳤어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjg5/MDAxNzY4MDI2OTk1MTEx.t4rZIChXH_sSSfXwuhggDPA1Q63g1ReJfTgWa7I-0Z8g.IgWPnT8Ykutaj_bOpdC65e5Wj-tCuus8WEY3F6H_bgwg.JPEG/471344653_575471015245621_4298740599751140835_n.jpg?type=w966" },
+                { text: "조만간 더 좋은 기회가 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNiAg/MDAxNzY4MDI3NzczNjMx.JHK0lKcZgmuoemn9SlH7tX_8lOI8ecQGsd8FCkvcuLUg.nnkhuiqFhOO8kKIVkjxY856T1jinfQKwM5NhlG87lAQg.JPEG/471423748_1323741961977790_7782231626600373385_n.jpg?type=w966" },
+                { text: "한동안은 관망하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTAw/MDAxNzY4MDI3Nzc2Nzc3.0xdXD-lwOukAJYzLd8Yy81M66CSjoZDl7Uoqk-jRz0gg.nxNx-bhEuF1xKGKymHcIKSm6KOrmosSlaELsDa1UJTwg.JPEG/537176897_17856572793497697_3275629218337640001_n.jpg?type=w966" },
+                { text: "먼저 손을 내미는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQw/MDAxNzY4MDI3ODE0MDMw._Zs6F0qaBt5riCMKH35voUFkG-ClXGdGX66ZSeszPNYg.k5K1wA41HHY3MfhpRSE0ONqqgzFziNdk5iBZS9eVKv0g.JPEG/537499635_17870281326424655_1914670484325753780_n.jpg?type=w966" },
+                { text: "상대방의 입장에서 생각해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA5/MDAxNzY4MDI3ODE0NDQ2.PUmpKgTghbkAzB-AmCmbTWAQdbcVj5nEvwSWdid-pJIg.55oav9arq8JV6cUuhCjcq6HstSMH8Ppo7qQc2weX25Ug.JPEG/537765632_17851842090533033_3547079688752592328_n.jpg?type=w966" },
+                { text: "지금은 거리를 두는 게 정답이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQ3/MDAxNzY4MDI2OTk1MDcz.T-Q_F7Kt29UveHw7gpN3zvC13nstj2XUVdnhdWVQmlgg.LCaVNsqnllbFBN-efehUFinFZDR0-k9vVrVb3h-U7jcg.JPEG/471342523_469245502538323_4514519961656380944_n.jpg?type=w966" },
+                { text: "진심을 다해 소통해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ0/MDAxNzY4MDI3ODE1MzAy.sqQrz1JKRDOrA-On5XEqloXWyRqpBvXzwttlBSu6PYgg.5y9R_Pey3EsQKx3s1ZSunphMZCZSBFTn9_MECr-6lecg.JPEG/537883107_17853598740515561_1664758533497576140_n.jpg?type=w3840" },
+                { text: "말보다는 행동으로 보여줘.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTYv/MDAxNzY4MDI3Nzc2NzQw.e_ACCzXAFQ5wBuUh2IvYC3c6-UDdx6-gX9_6tkxIj9Ag.oxxXa2HRn5qDF4jHmpbvoWGphGKVG1x9EmpQtwm3GL0g.JPEG/536996056_17857104810488735_4533362822509317324_n.jpg?type=w966" },
+                { text: "최선을 다 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjg0/MDAxNzY4MDYwMDEyMzQy.6UBSjqsEJ1lhMSx1cfXDN08VHQ1IF7k6-virS-2JE64g.RtxXfJKHskAusdAkJ3VUesshd5ZNV8zKeHBa5yNq7dkg.PNG/image.png?type=w966" },
+                { text: "단호하게 선을 그어야 할 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjE1/MDAxNzY4MDI2OTkyNjUz.yrm3wsGlG2EaAetcjSMP2usWBnW4FsRTbWprvENktNMg.DOGZH2AookZofV8tjk0Z90gW_HoM60WfL1N-ddYp-_cg.JPEG/470945491_1088146149675308_4979483407975033744_n.jpg?type=w966" },
+                { text: "이해할 수 없는 방향으로 흘러가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg4/MDAxNzY4MDI2OTkzNTE2.-98heYnY2Y8fzJg186QjR7d00NeMvwP52e1Crhgu81Mg.1ePo79WL2czBj_UcwRihenHz4HkClzgJy9oDP4ziXxog.JPEG/470974274_3900885396823754_6459223384509408253_n.jpg?type=w966" },
+                { text: "주변의 조언을 적극 수용해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgg/MDAxNzY4MDI2OTkyMTg2.B4iCadpLO2WNplBz4_shnsfbTdZgSIpSrkl5u0q2qQwg.GqeqQzaULLk-IzxZW4VxuKkSaqITP9QjJBRnSGPlFusg.JPEG/470919413_908091504765278_508618536464747851_n.jpg?type=w966" },
+                { text: "타인의 시선에서 완전히 벗어나.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk3/MDAxNzY4MDI2OTkyNjY1.x5_HwDT76kBUV6IYmmy6h_7s1wCpjtOyR-LQAPbbk9Ug.aCF4MEJfQS_aeyjX8QRHiv15LobFrVfyLoMhCHZOqTgg.JPEG/470945958_1257029825509105_5819749557036259994_n.jpg?type=w966" },
+                { text: "욕심을 내려놓으면 답이 보여.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfODgv/MDAxNzY4MDI3NzcyNzk4.NfX_VSWeueXGIO7IafDJoKQK8O1cJV4Em50awmyKDVUg.UtvJsT3q8QX2ExbaNeeiO30tmxXoQe0MjtsYmHyhnA8g.JPEG/471415944_1289490815531636_5304775011623346476_n.jpg?type=w966" },
+                { text: "충분한 휴식이 우선이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjgy/MDAxNzY4MDI2OTkzNDQz.7Kp0a_Uj87HYD990t2xKPLlvoGR86abf3ex6yAcGghkg.xfaRXvbdHlOgpJT7aHHyJl-2RdkmAm28CwikM_GWhVwg.JPEG/470974256_1270887010696527_8610458479408108418_n.jpg?type=w966" },
+                { text: "실패를 소중한 경험치로 삼아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI1/MDAxNzY4MDI3NzczNzkz.MK96Dls4f5z3TM78wMopW2g5Ye4VvnsXRBOd4mH0vYUg.c7gkw8gbxE_ZQr-tlW2FlpCrtOnkuWH4k3T836LNnZ0g.JPEG/471417256_484564494213995_732170814201819302_n.jpg?type=w966" },
+                { text: "너의 직관을 믿고 따라가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI2OTkzMDUx.lvRluM9jVihDJEvAW-3obSp3gR2NTlLRd58VSW70ixMg.8uv1uGpFrfCCCKGwBI4ud6boWwDYFPgqu_FLz1lsBdQg.JPEG/470956508_1246531939980808_7454440809901099566_n.jpg?type=w966" },
+                { text: "초심으로 돌아가야 할 때야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA1/MDAxNzY4MDI3ODE2MzA1.RJgNnAiCnR8zITc0VjsJwMtQF2B_pOPd_nTNMorVvv8g.KBET2_M1qf4hgsW2yaqhd3YsDp3ZhLR1o1Kk1rbIrlMg.JPEG/538188868_17851842135533033_8875994665437499073_n.jpg?type=w3840" },
+                { text: "오늘은 고민하지 말고 푹 자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjgv/MDAxNzY4MDI3ODM4MTU3.MYNJAQ1DIhslgXRSjg3NUA0vbSPF6QmFCZbDKBsFnN8g.HT14zYLn1QBLKV-yw2uU-9zKz0Nq7lG8g7XZ7tb6YDAg.JPEG/539421454_17856572685497697_8702639014757183663_n.jpg?type=w966" },
+                { text: "너는 이미 충분히 잘하고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTcw/MDAxNzY4MDI3NzczMTc2.0O5M0k0c10WL_nD816YWVrjtjuYiHc_itGxibR9q6VAg.D8HUlCPMNqUE2N5EFebig1ECX3BfueDbckqwaqzC1bgg.JPEG/471421624_609647858099261_6707363916528422863_n.jpg?type=w966" },
+                { text: "완벽보다 완성을 목표로 삼아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMyAg/MDAxNzY4MDI3ODE2NDUw.JxWej74R_IqT7nXmtE-B6onQApJ6KgED3IjHpx4GHB8g.p95_wyWOvvPODFS89uUI4QUDqf3XElbAI2jMLrWrXZcg.JPEG/538210399_17870281239424655_5934383533660286081_n.jpg?type=w3840" },
+                { text: "왜저래?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTMy/MDAxNzY4MDU4NjM1NDQ5.sfxh0mB2iEoVAFNRoatB2PWEbspnP_e2_YNaPmXFx-gg.9GTBjJhPRU9NXDvZPtxgHQGPdlU8ftfbktu-tXj06i0g.JPEG/611253728_17901318450349536_7416505175159071951_n.jpg?type=w966" },
+                { text: "너의 능력을 과소평가하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTI5/MDAxNzY4MDI2OTk1NTg5.5XdZ-UGE49Y41eN2l3Ijzry89RWE1gvu6fk1UXpmWMYg.iyoivtuDSKrG8ah70r4EELvlO5GMT5cBSzJgeJip6n0g.JPEG/471383605_1113536933658373_4581268255808723528_n.jpg?type=w966" },
+                { text: "주변을 살펴.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM1/MDAxNzY4MDI3ODM3MDQy.E41MgkemEhaWWqz_GN04NuLHJjGCwvBJLqKP08DW948g.eG9YidS9HFBGcYg80qU-09mLJihq1Fym2XUCgQbJrOgg.JPEG/538949924_17856572775497697_410999454283471210_n.jpg?type=w966" },
+                { text: "지갑 조심해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTMw/MDAxNzY4MDI3NzczODA3.eELyr71CzqauUblyUCbJY7IFJ5fq9NKi_c7lDbMTJMsg.nnOI1HnXdYNjeNv6zn7w40ZZGPGao603DjLFp4masP8g.JPEG/471426823_2098647027217974_1517878497957254640_n.jpg?type=w966" },
+                { text: "장기적인 관점에서 바라봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgz/MDAxNzY4MDI3NzczNzk4.1l0N7k8g6T3V8j8x7i5M9v7G4e5l8f6h5g9o6q5x7z7b6d7x7t7_9f9f.k_2f_4l3J1h9u8X2w3d0U5G3H2I1B0V7C3D5E4F5G6I7J8L9N1P3R4T.JPEG/471439209_1241151608985953_4490710777552955519_n.jpg?type=w966" },
+                { text: "끼약약", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUw/MDAxNzY4MDI2OTk0MTQz.3SWzxAnzAzxD9k0NW_kQDP7G0vdpwiBeAUMsT-HaDw4g.6A0WbILJPeSbCfcK6ZcMtzPWYWeqfi0Zf9fkioxDPEMg.JPEG/470987498_1257729875491030_8289500734559718951_n.jpg?type=w966" },
+                { text: "낭비되는 에너지를 차단해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTIw/MDAxNzY4MDI2OTk0MTky.UgkQidAS2dHP8Bxw1zys8ZWtSANT9LtepymsnvJxN8wg.h0N23vOYyTykaasWRU1JLkaEkbs7bKs7Av6pZiMWrMgg.JPEG/471278031_940320920909029_8584681969427729457_n.jpg?type=w966" },
+                { text: "다시 생각해봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ1/MDAxNzY4MDI3NzczMTk4.S-VaanW7wxDoWAPgOXQmunHeJoqNk1rS5M4hrwhXlZwg.fj5G_3eubhen-qWXLE5kn7IYJoacKVwdWA6K-EJl5jYg.JPEG/471421626_2717112751809969_5965250273883006448_n.jpg?type=w966" },
+                { text: "아무것도 하지 마", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEz/MDAxNzY4MDI3NzczMTcw.qIG8s-xuj9fga_TO6jBkTsnqK7ZU751lhdYfVW7s-X4g.scrgaeA8Kl8F69Dz6BBboe2-kxi3TD4JCepqeR-Ouqkg.JPEG/471418158_574903315305003_8166277514237983453_n.jpg?type=w966" },
+                { text: "플랜 B를 반드시 세워두도록 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY5/MDAxNzY4MDI3ODE0NDM1.ZfK6h-Ih-v1Q_cwHlPoaMOshiHiIdCyVcWoJYpPXTUwg.kZdSqgD2vr4wsOWwIVgPlnQcI74kL20OhVPOSLQ-8AIg.JPEG/537743492_17853598776515561_1439169669021641943_n.jpg?type=w966" },
+                { text: "기초부터 다시 탄탄히 다져봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUw/MDAxNzY4MDU4NjMzNzY4.lcq0gzqSidmD0qjd8V-x0n2KyMSDWuIErHeHDbwLIx8g.golBakmLbPN3Lt7K78HgLWG1UahE5CItCwMG9EscrS8g.JPEG/503702885_17847308103503376_5049730133105342113_n.jpg?type=w966" },
+                { text: "주변 환경을 과감히 바꿔봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNjgv/MDAxNzY4MDI3ODM2ODkw.U5LwH8X7ygaD12KdF5GAYIyzDmoR4fs4-xAZUpUj6ggg.iTU2h0g0m5zjJ4UIWOmULLKQnYBlRrEqg3eo2fwywdEg.JPEG/538931876_17856572877497697_7180929099159227456_n.jpg?type=w966" },
+                { text: "사랑해요 데이식스.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgw/MDAxNzY4MDI2OTkyMTg5.g0c9UDyUtz1wm-0-_WoPBsR0-W3Nfm0fSmmP-w4-1yIg.6SA1UTINO6jzHtrpCOsKQtZlptObn2a9-eEgMS8yXkMg.JPEG/470918291_492150796699639_2292967133372585021_n.jpg?type=w966" },
+                { text: "오늘 안에 반드시 결론을 내.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI2OTk0MjMx.FobCh9fZL69AaTUoDxrmvAUQ6xUxByeNoJ9Ps9ilNpUg.c01_WW3X-DIaX5_JR14wLLdJUNy9o8OKzxEoNVBQYOIg.JPEG/471285424_1094838635299019_1624192532019363486_n.jpg?type=w966" },
+                { text: "작은 습관부터 하나씩 고쳐봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfODYs/MDAxNzY4MDU5NTIyNTYx.6j55_K6GiGpQTRbSGfPzhNiQMkdPr09m_-dOXs_ocxIg.-x_35jz2bwcCN8vG6qsREQPdSnTID37pSzYc-F2QamIg.PNG/image.png?type=w966" },
+                { text: "인생을 걸어봐", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjU3/MDAxNzY4MDU4NjM0MDAw.2gIjG_OrhCQfFT5HScFcNrSuA3VIBEOLBy0lSWFwyBUg.TM-ibjCS5c9gdqSPKRsXtFgABL2aqYS4hWH-IfDhu5sg.JPEG/502333952_17858459013441705_7350694088630081152_n.jpg?type=w966" },
+                { text: "일단 시작하고 나서 고민해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI3NzczODgy.uzVzmBrEK9Xj0aXxU0bGkaIss4VOA1Bpd9EmQpkg-rwg.Ev0h8jhgOd1gqBnCsu8gxctCe8p-Ddj4bpTI1dzrziYg.JPEG/471540709_1235081514218466_462777939947061301_n.jpg?type=w966" },
+                { text: "정면 돌파가 유일한 해결책이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTUz/MDAxNzY4MDU4NjMzMzk1.HN_nHruPrKcZ77K7JEye932OzMMpIFyb5BJSyZxvvnog.0GWKhFo0LOlHxinesHA_cGE6GDXL2fBMRx_qURtujuEg.JPEG/509443783_17858459055441705_583834764044819433_n.jpg?type=w966" },
+                { text: "한 번 더 도전해 볼 가치가 충분해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEx/MDAxNzY4MDI2OTkyOTEy.uq6tfVZ5_YOwXb4Wk5fqhnNll1wNhfntBnqHEeidF8Mg.jFSiF_UfyQCTCXY8m8Ub2L2LyphE-qkwClshfPEJtIQg.JPEG/470951223_905809368200224_1808752253396717876_n.jpg?type=w966" },
+                { text: "불필요한 것들을 먼저 정리해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTAs/MDAxNzY4MDI2OTk0NDUz.poyLnSbYsTvTcJjpsU9AHVSGM-Hzi0jDBNA-zWXFuMog.q-DYi5bT-WtLs1tZdxMOxeq8Zaqyz_S1fLDiMILpvZcg.JPEG/471296581_557717147106015_1395038629054871909_n.jpg?type=w966" },
+                { text: "주변인에게 잘해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTcs/MDAxNzY4MDYxMDg1ODY1.o1UVCiRtmYo7839Y0YNmXAj5ZVR7d76kKmpRf1GzQbIg.C7J0LXWHJdNLwlaRonFT7WT7SKN-NYqs00ZTCGv1_CEg.PNG/image.png?type=w966" },
+                { text: "곧 좋은 소식이 들려올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjA5/MDAxNzY4MDU4NjMzMzg5.yzNHMSqVTGGjF59o-lAh2o0lPzi1iZ9r76mrkAA_M18g.scNQPxuVWY0kJHX9k1I7PG9S6GAGLdR3-BBw2iM8C5gg.JPEG/509371049_17847308121503376_582685732200797260_n.jpg?type=w966" },
+                { text: "노력한 만큼 확실한 보상이 따라.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMyAg/MDAxNzY4MDI3ODE2NDUw.JxWej74R_IqT7nXmtE-B6onQApJ6KgED3IjHpx4GHB8g.p95_wyWOvvPODFS89uUI4QUDqf3XElbAI2jMLrWrXZcg.JPEG/538210399_17870281239424655_5934383533660286081_n.jpg?type=w3840" },
+                { text: "생각보다 훨씬 쉽게 풀릴 문제야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzcs/MDAxNzY4MDI3ODE2NTM2.qE8_ySlvkie5LjCT_bF_IOBEaNd1MTJB59XgSt2Tq24g.Gb8v9s0NMhOcF8QFpScUexYDzwpXMKm97TwBMlUXLi0g.JPEG/538214811_17851842126533033_8361268849527843389_n.jpg?type=w3840" },
+                { text: "운명의 흐름에 몸을 맡겨봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUw/MDAxNzY4MDI3ODEzMDYx.YhjK37zjIl3WoIqqEnBijXoMpUejJ1CmetAHLd_n_58g.oGl1CgZItX0k4lYjv8dTTKn8kEXNztJWrg2Wr3jwDc8g.JPEG/537370959_17856572937497697_7915547816834064916_n.jpg?type=w966" },
+                { text: "고생 끝에 반드시 낙이 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA2/MDAxNzY4MDI3ODE2NTQz.LiulnC3XUvqjdvo5LXgy0QwXBnNBVlxoY9tgaOvIW2og.N7BRnyXD7uvPb10zS4kOKY1zO3ISZTM5DaSGZLOGtUEg.JPEG/538221219_17856572766497697_7545804312809720754_n.jpg?type=w3840" },
+                { text: "귀인이 나타나 너를 도울 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTZf/MDAxNzY4MDYxMDcwMDIx.6oxnVEp8d6Sfjrh4MahQiNvc00mAoji7bVp94eKbW3og.TkD_byS1AZ7z_MGgZD7NB0-9qp99M4u8imIfSQn5FUsg.PNG/image.png?type=w966" },
+                { text: "안되겠다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjUw/MDAxNzY4MDU4NjMzNzHe.lcq0gzqSidmD0qjd8V-x0n2KyMSDWuIErHeHDbwLIx8g.golBakmLbPN3Lt7K78HgLWG1UahE5CItCwMG9EscrS8g.JPEG/503702885_17847308103503376_5049730133105342113_n.jpg?type=w966" },
+                { text: "전화위복의 기회가 될 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjUw/MDAxNzY4MDI2OTk0NTEx.kU8aozc1hLKMMMVBtUIkujw6xnlAF26FYtG3i3ALOysg.j2avlpWbCCumyeykZ_glrNh66VjY8wCf4C9e2L1giU4g.JPEG/471301537_3785900868338309_2414168105373040309_n.jpg?type=w966" },
+                { text: "네 선택이 옳았음이 증명될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI2OTkzMDUx.lvRluM9jVihDJEvAW-3obSp3gR2NTlLRd58VSW70ixMg.8uv1uGpFrfCCCKGwBI4ud6boWwDYFPgqu_FLz1lsBdQg.JPEG/470956508_1246531939980808_7454440809901099566_n.jpg?type=w966" },
+                { text: "멋진 생각이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgv/MDAxNzY4MDI3ODEzNDA3.sNtPQpxrkgtQp0JkYm8DKTzs3-FnMs6mezmFRL27dlgg.CQpP0zfOvZPDVctj1M9mptuusiMpe5FmUxk4NT3CyBAg.JPEG/537398155_17879289750385054_3412903911781870952_n.jpg?type=w966" },
+                { text: "눈앞의 이익에 현혹되지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNzZf/MDAxNzY4MDU5MjY3NzQx.fUlnnDA89pcLkTEXbJgbU-rOio6T_iS6Iq1O9_B_jOog.m2xZnmJ9EjYj1n7SvuZS4Cb8HiULZwblddrEA5UQXukg.PNG/image.png?type=w966" },
+                { text: "돌다리도 두들겨 보고 건너야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfODgv/MDAxNzY4MDI3NzczNzk4.NfX_VSWeueXGIO7IafDJoKQK8O1cJV4Em50awmyKDVUg.UtvJsT3q8QX2ExbaNeeiO30tmxXoQe0MjtsYmHyhnA8g.JPEG/471415944_1289490815531636_5304775011623346476_n.jpg?type=w966" },
+                { text: "말 한마디가 화근이 될 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTY5/MDAxNzY4MDI3ODM3ODcz.gQbXMlR1Fo0xgmhlzswbv18io59cguGUXco8lxVAwKog.W-pl3qHqqjGeXX-9svhgo-_UEacDDHP_QeybEgItHY8g.JPEG/539351372_17853385158516978_1753370600082794948_n.jpg?type=w966" },
+                { text: "귀인이 나타날거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjM2/MDAxNzY4MDYwOTM4MTky.xFvQZc1u3vnOpoW6pqm0LPG7Ypne-vwM2qT8QimBnxkg.7BbSw7bKDYqpt4WFE9mUs8Z9NyI017KiwRRuCnyVAPAg.PNG/image.png?type=w966" },
+                { text: "건강을 해치면서까지는 하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA1/MDAxNzY4MDI4OTYyODc5.eq2KJ1tk1kS3xOtYA-5ULTqjeQNmE_ziQoACFMmdB9kg.rgBv_lFInow9rTw3pOznvQ40Y19Yf07jxQ4Au_-_cP8g.PNG/image.png?type=w966" },
+                { text: "자존심을 버려야 얻는 게 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ0/MDAxNzY4MDI3Nzc2OTQ4.8oPnAZulB6b9ZeQNrzNh5ee0VjUZLWq9wMMWa2-zjRIg.ztWkb5tYcc4W58k4DgLS8hSl_Y_8Imigfp54rY0FR9og.JPEG/537216673_17870281185424655_3889326438412804500_n.jpg?type=w966" },
+                { text: "주위를 챙겨라.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTcv/MDAxNzY4MDYxMDg1ODY1.o1UVCiRtmYo7839Y0YNmXAj5ZVR7d76kKmpRf1GzQbIg.C7J0LXWHJdNLwlaRonFT7WT7SKN-NYqs00ZTCGv1_CEg.PNG/image.png?type=w966" },
+                { text: "함정이 있는지 다시 한번 살펴봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIv/MDAxNzY4MDI3ODE0MDM4.CZ78l0WDsflASzdpiCAHTmGJa-SenhmYzUbeaopzNHQg.uHoDyPbHpT9jLUJFe-AmvV-BjEt5RognNms7_R-Zt54g.JPEG/537690454_17851842108533033_4156225156773305413_n.jpg?type=w966" },
+                { text: "함정이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjIv/MDAxNzY4MDI3ODE0NjQ1.jjG9sN6vgpRWuMqJ8VwYAzSNK2gzLTb2nmabtbnZfnUg.4gWGgZv4Jtz9PGNuOxM2AkoD6q2uOOo04T-E4Ekrw4cg.JPEG/537802501_17853598896515561_9124905795350094607_n.jpg?type=w3840" },
+                { text: "타협할 수 없는 선을 확실히 지켜.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTcv/MDAxNzY4MDI3ODM2NjQ3.1coOp7_-f0dLQ0X1hI0BTlD-cUBcr2fwohhkIM04_g0g.EhmXlpu8xa8JskV5fM4FPAa5P2UxLsVbN31_mkyoy8sg.JPEG/538831107_17842693170563590_4163370592700785831_n.jpg?type=w966" },
+                { text: "화를 가라앉히고 냉정하게 다시 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcz/MDAxNzY4MDI3NzcyNjkz.W2eHydQ0lvCzdR6a6vP4YohWF2m5DpdVmAl0RpYYclgg.JqSMEj5GsK1eYDnwGvMFBxMipHpBhltvdwrjPQVwPbUg.JPEG/471404539_1104134077877520_5747308822689392064_n.jpg?type=w966" },
+                { text: "불안함은 마음이 만든 환상일 뿐이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI5/MDAxNzY4MDI3NzczMTUz.cKJTXjXqTZbG5Q007ipgqlig82Zg8nZYXjbppxtb2nIg.plOTd4PCLOJAW6vj9gn94NdFCWhinBhne2C773jtW1wg.JPEG/471414903_1240685700520207_4315554218955738866_n.jpg?type=w966" },
+                { text: "너만의 페이스를 유지하는 게 중요해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfODkv/MDAxNzY4MDI3NzczNzg1.9Vqu23xnfcdk4HglN3Qs6qnGoqqoU39hHt2o2WB0yhYg.vQbx_-Sb8bdLQP-D6QBSzWMwcFehnHK9FY_dyBSa0C0g.JPEG/537360981_17856572757497697_6746662910797076673_n.jpg?type=w966" },
+                { text: "웃음이 최고의 보약이라는 걸 잊지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTYz/MDAxNzY4MDYwNTQ1NzEx.HEhbKk3dTzEVY5LsFEGGemj3Q9H4gGfG6zNdNkOUlOkg.6PAxLuC7jJsqGGoIo1Vn0J0wx6wIFRFOkrs2h2hn06sg.PNG/image.png?type=w966" },
+                { text: "어머 웬일이니...", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI3/MDAxNzY4MDI3NzczNTcx.D0qecRw__PUgXruk_JssHFTRXeRjfuBuwyg9RfXK284g.W3EruK_G_CM5KUSmKHEi3qHU0N940a336hoqVodVGBUg.JPEG/471413422_1692417344678512_3079644989457370601_n.jpg?type=w966" },
+                { text: "너 자신의 행복을 1순위에 둬.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUz/MDAxNzY4MDI3ODM2MTgy.EmIYK4kixhd1B4xaKdlaKfSxoPbcVFdt1HJwV5oi9EYg.kuhMEPiLTOsBuCVEAClubOB_N0Mx9TeMecnNcZHlBXAg.JPEG/538785258_17849635872541372_8324895571858659608_n.jpg?type=w966" },
+                { text: "나나 잘하자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjY5/MDAxNzY4MDYxMDk3MzA0.Fs9oOjxdFLxFgqJcSD8E_NQb8QDb2gEU7QPVUlYftRgg.XfqdaI8T4s6mkiMCIlM258jfQHcTg5M2ynzDFP5kpM0g.PNG/image.png?type=w966" },
+                { text: "지난 실수에 너무 연연하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjI1/MDAxNzY4MDI3Nzc0NTU0.bzDBh7-_-3e6IYvR2d3Lwse7qVNZWLp_1v3DdNmQdV8g.EHi1jwgRy22a7fEArVqV1NXm-yKCmnzt0T6XroS-Dusg.JPEG/471504788_956830906343709_588304862126398552_n.jpg?type=w966" },
+                { text: "마음이 가장 편안한 쪽을 선택해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc1/MDAxNzY4MDI3NzczMjI2.b6IjxB48VKQC991V1kUNZjKiMZf2dKDz5RcbPzQB55wg.LkI5IneHhjiQ6vER5uJyBrfG1h7-Rv9-K0cT7EmGkpsg.JPEG/471408107_2637605419781146_6772758038193586911_n.jpg?type=w966" },
+                { text: "오늘은 스스로를 아낌없이 칭찬해 줘.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY3/MDAxNzY4MDI3ODM2NTU3.RYNIpn11UG_KXMiuc1oBBNn8z0VVUra5Dzl7YjW04Iog.kzO2GCyvYx2wwVUXZMF08jpq8PyJMPclT1PJ7KeW1uIg.JPEG/538829272_17853598872515561_5707994119411425022_n.jpg?type=w966" },
+                { text: "너무 심각할 필요 없어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc0/MDAxNzY4MDI3ODE0ODI2.RkcHJuv7eDIB9dm0WBAH8wAlZysnlCJirGh0Wc1HBJkg.-bIwelXq5Dn_Y5JZuRq4Z34fEaUjZ6NPEbLaWBxJ_dkg.JPEG/537804624_17856572694497697_3320788728845457835_n.jpg?type=w3840" },
+                { text: "잘하고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA2/MDAxNzY4MDI3ODE2NTQz.LiulnC3XUvqjdvo5LXgy0QwXBnNBVlxoY9tgaOvIW2og.N7BRnyXD7uvPb10zS4kOKY1zO3ISZTM5DaSGZLOGtUEg.JPEG/538221219_17856572766497697_7545804312809720754_n.jpg?type=w3840" },
+                { text: "할 일을 하자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ3/MDAxNzY4MDI3ODM3ODU3.tIqAsn7cssSfQtNNebushgo_f7vbNaWFJT4vwk2XsG8g.CGbJP1fsLLFRCJMfHVjRh7eHPNQK-5l4Qp34imvR1yYg.JPEG/539301248_17879289753385054_5203923026081307444_n.jpg?type=w966" },
+                { text: "협력하는 법을 배워야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYz/MDAxNzY4MDI3NzczNDYx.7vNUpm_oT4Uwo8uP__wkTaj0_p7lXzv-sMof0Z79Mjcg.GZ_Xgu3F85SaMVA4bZTfbohRwFN9kX515tlEKT_jkU4g.JPEG/471509281_585718304056982_7705191075356067814_n.jpg?type=w966" },
+                { text: "기회를 잡을 준비를 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcz/MDAxNzY4MDI3ODM3NzY2.4hUIidiYhdx-HztpeAqQA4QnbvXynZAW_qgygMNkq50g.QNsloUG_YGIjVKaGB-1qivnKsDsVukvAhJTwKiWlwj0g.JPEG/539275016_17870281308424655_7703233718139269833_n.jpg?type=w966" },
+                { text: "쌉가능.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTEy/MDAxNzY4MDU5MTg2ODgz.sgIQ8lLw8NDi7pEZnTQRTMw3Db5u5Mzp94Aa0AY9nUwg.c-80fFhuSQoB0HXZWTS0hElJpenVUgeu73fq-ftKrr0g.PNG/image.png?type=w966" },
+                { text: "집중력이 필요한 시점이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzkv/MDAxNzY4MDI3ODE0ODQ0.lPiDa1zrSHaR8J5i1fj7UmTXf424VYPZ7bilNXqFfU4g.U9uXjf8jveVcnYvakz4CpGnOdzCbXJUeUrzT3APBqJwg.JPEG/537822432_17853598803515561_4246802335249746931_n.jpg?type=w3840" },
+                { text: "정신줄 잡아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgx/MDAxNzY4MDI3ODEzMDU2.jufWVOsdjqCL9USmr3a1xI97fd6V5lDBRGWzCmemjJ4g.O8najjdZZmzysF-aKVFy6KJ4NMDmdrJPZ3wUd33ixi0g.JPEG/538283849_17849635818541372_8669785353386810796_n.jpg?type=w966" },
+                { text: "세부 사항에 너무 집착하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTAg/MDAxNzY4MDU4NjM0NjEx.d2AG-pQuCgHPpUOyGyby5ipqJIz9aljAR8U2kfEGBvIg.4H1yGOwIxp7Ahiapguj5V8Ws6H0AE8MI_Tj_5KWNLaYg.JPEG/503703524_17857265235445253_8880937047932859166_n.jpg?type=w966" },
+                { text: "전체적인 그림을 먼저 그려봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjI3/MDAxNzY4MDU4NjM0NjM1.lzvd7vc6Nlcf_4-EcX-YeafDgJHawRWa4k8Tr_bjvSUg.7VR1wl9UlBpEXCbZ7gLOnhXb7JzN0LfuQP1pIYEJMyYg.JPEG/503554303_17857265223445253_9027674163067463647_n.jpg?type=w966" },
+                { text: "남과 비교하는 건 멈춰.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOTIv/MDAxNzY4MDI3ODEzNjAz.-5gRbeOu59rf1agOH_AJbx9kNEZTc4vK3cyYHnJ9iY8g.ONCz6edlu27lBBHFHehVaINfZ5X4uggHEUd-E7JcdzYg.JPEG/537465175_17852773722529957_3902479861321940996_n.jpg?type=w966" },
+                { text: "그걸 질문이라고..?", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUx/MDAxNzY4MDI3ODE0MjY2.GkTXiaz5RmFu1jIUpFpifuSIIXOc_0wz0TgGxioVR9Eg.2ikJuee_YunK3lrOxyGXI9v8G9QHtynD2rN2ZPxItDUg.JPEG/537741353_17849635881541372_9042093778844313851_n.jpg?type=w966" },
+                { text: "과거에 얽매이지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYy/MDAxNzY4MDI2OTk1NzI0.aA29Mxio5SMcXTtMxySdQ_IjvpKMT_Mvk9Qe6bFtoMYg.DqNhKPxvfg2py_54qkZnRz4TVQV5QR_qW26ZiL2-3Cgg.JPEG/471384055_1235858487706929_478811040537450812_n.jpg?type=w966" },
+                { text: "냉정하게 상황을 분석해야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTk2/MDAxNzY4MDU4NjMzMzg5.3y76CNDy8FABe2OUQN16IgnoraLx0FqknXf661qFWGog.7Gdi9JBWL_mT4OAsvj_KWl5vp3ub3PQL2TOsqAFsEBkg.JPEG/510983652_17847308079503376_6146710466178073326_n.jpg?type=w966" },
+                { text: "안할거니?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjkv/MDAxNzY4MDU5NDIxNzI5.8vzujZhkM6Jx03t_7eQ51CP5XJe1PAkJd0GuN4lbbxYg.nN6ByNve6XZuJFR6IVDq741MbqsdhzgDU86MZMKBVMUg.PNG/image.png?type=w966" },
+                { text: "스스로를 돌아봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjgy/MDAxNzY4MDU5ODYyOTE4.vJb3LdZeXakpRYuXApB5F6FgUiOE4_nzW2kmM21rENAg.fFLfMX2ijIJGw1SvHrUDu7VF9st1ZTLjy_26Nq4JUEIg.PNG/image.png?type=w966" },
+                { text: "아는 길도 물어가는 게 안전해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjA3/MDAxNzY4MDI3ODM3NzEx.o0dAAkHp8DP3aZloSbf246d31dBC_8_oF_QoYuMY0KUg.uRe5mA_B_fyzwUiJrC5jVVw_Xi6w2XL4ekNPOKfdw_cg.JPEG/539265081_17856573018497697_4290603764109574436_n.jpg?type=w966" },
+                { text: "겸손함이 운을 불러올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDMv/MDAxNzY4MDI3ODE2ODc5.lFH5R7nPhwJmurHRJE_5igF8tGFZ6BX5iUYiGT1zmckg.efo1iS1ZIAoQD65YG_prKjrYmi4fKjqhQXhxNRw037kg.JPEG/538279801_17853598749515561_5367939741165499355_n.jpg?type=w3840" },
+                { text: "때로는 포기하는 것도 용기야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjcz/MDAxNzY4MDU4NjM1MzIx.LnbQXrbhZkerV5Ac8vE9D-TjL0u_i-asNlS9zU9PPOUg.Rk4py_7qDathudQ78GtdgfwAnMx_Lk879rTt_C-BYxIg.JPEG/612244667_17901318441349536_571745256370908297_n.jpg?type=w966" },
+                { text: "계획해봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNDIv/MDAxNzY4MDU5NTc1NTY2.15xjlr9fC39w4aKbqAZANB55w7VSP39axVZjuaDMX5Qg.NRQQHoTN7cr34V19UcJFgrUcCXXLF9fh2EaBFwMLp7sg.PNG/image.png?type=w966" },
+                { text: "자신의 한계를 시험해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYw/MDAxNzY4MDI3ODEzMDY5.Qt7uJhCs5KVmuQii0lE3u5QsY3AHP9Y9m0S4pRnmmVwg.5vpKEh-xfbSdNGtJVqx3gvvl3CgYWGoxMTWx9KPNEx0g.JPEG/538385696_17849635854541372_5185058041645088958_n.jpg?type=w966" },
+                { text: "두려움에 당당히 맞서 싸워.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTU3/MDAxNzY4MDI3ODEzMDcx.9gE4eBYelRwM0GkOw4jcFI1_78iRs42BVJM-wUkdfPwg.XN41SpogtBnGeHbdxioAO6Td2trDIl9v7MPNCwV5iAIg.JPEG/538381514_17853598875515561_1665384423318628657_n.jpg?type=w966" },
+                { text: "즐기는 자를 이길 수 없어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTEy/MDAxNzY4MDI3ODEzMDY1.WHeXdfJFeASSiq0v5C1icfPZqLKWomYIkEPmGaZblNMg.a-KUB_pvHqWuDWmDdEyYBPTqMiHQfUEwoKGdjtbkOtQg.JPEG/538285766_17851842162533033_5609273150540261858_n.jpg?type=w966" },
+                { text: "긍정의 에너지를 전파해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjE1/MDAxNzY4MDI2OTk1NDIw._DDue1IWAtdNe12iqZx2EVcV2YruCB3ZDVmYn5N81Nsg.zB5rDG49JvrpNc7QUfSIwjDn798_0U4h8695UR2uQiog.JPEG/471369029_1555033298479979_399203158796461821_n.jpg?type=w966" },
+                { text: "말의 무게를 신중히 느껴봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQ5/MDAxNzY4MDI2OTkzODM5.xjBpFvPE3LAc_cHLZJzUWK-wQLzQz2JXxms91Q7TVecg.iz6PQCywLmuEYqrlrcZ-UVeuXCKuW8j1n-6knGWEp3kg.JPEG/470986231_1119244046380634_1914898121956567187_n.jpg?type=w966" },
+                { text: "바로 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc4/MDAxNzY4MDI3NzczNTE4.DDTr2VD37bxA0FIXxavHisfeUUEdnVRsfTpI1y2vxRAg.F33JLHYy3Gs0A4UN43UFkfMBzlLEyq0BgUVi5K4qUBog.JPEG/471413420_625460336583789_2127735618921024189_n.jpg?type=w966" },
+                { text: "할 수 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTIz/MDAxNzY4MDI2OTk1NDIy.ASNan4EM1OpLC5YajWjW4pM8w-03Yo3XDXt94mnHKWkg.Rl5qGPMyiVNLdSPWpWdpfYX52NcCVnvbOYAqvYgDzRwg.JPEG/471374405_473461762436494_5489710468527144762_n.jpg?type=w966" },
+                { text: "복잡한 문제는 쪼개서 생각하자.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA3/MDAxNzY4MDI3ODE0OTEx.FJsZ3OKjlb5AwntCYnNaxJpn9UEfZuHnxtZMAwGbfk8g.W3O0XZEG6JvqGyY5R4XCXJwh354dpp_3C26pSVdWDw0g.JPEG/537839663_17853385197516978_4085221377023915417_n.jpg?type=w3840" },
+                { text: "핵심을 찌르는 결단이 필요해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTMv/MDAxNzY4MDI3ODE1OTcz.NYjdTNc11nZSwYDueq2VVMNpkHHAzh-M9h-cOfqjagQg.IoDiZ3HBHU50x_Xk8inNcJJgGiN8T5dgg1yA_GwtXCQg.JPEG/538120642_17870281248424655_198676622730605386_n.jpg?type=w3840" },
+                { text: "상상력을 마음껏 발휘해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTcy/MDAxNzY4MDI3Nzc0MzQ5.FP3TgEaHLRrwrARyh9gcVE0_8SMONOtuVRYbh61dOEQg.yU_1nGStjXUHxARImQPCovtPoxyVmE1Z1ibeXeyEPvMg.JPEG/471461843_605530455205153_2995014770169653870_n.jpg?type=w966" },
+                { text: "현실에 발을 붙이고 판단해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTUv/MDAxNzY4MDI3ODE2MDU4.e8VnHOn6lRpmNV3nX1DDcRtZcgTYUm4ftXadSvQF0Bog.YOw_SfWTbPT3BMU3ZlFeMT6rOC2PAI5tvuNQCNNE1I4g.JPEG/538137842_17852773647529957_8373896975961416343_n.jpg?type=w3840" },
+                { text: "꿈을 크게 가져도 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcz/MDAxNzY4MDI3ODE0ODUy.kbk5fky31RI9_I5UcaSwn6hLKjCJlK4Q57S7nl6Z5lIg.rZfJM67j_KS-yUReqxViOS29c5lFP9GkMxC6Yh_foC0g.JPEG/537829980_17856572991497697_3690909188840047287_n.jpg?type=w3840" },
+                { text: "행동은 민첩하게 해야 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjg2/MDAxNzY4MDU4NjMzMzk1.sClsbp68ufLEYH177Fdzj9XBocE68BsszqR-GtAQ8N8g.DiXEq9anQVjlYlsYavfj-TplWEb_nBoUmg5CFys4Fk8g.JPEG/509816634_17858459094441705_8604131525228082602_n.jpg?type=w966" },
+                { text: "생각은 깊게, 결정은 빠르게.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI2OTk0MjMx.FobCh9fZL69AaTUoDxrmvAUQ6xUxByeNoJ9Ps9ilNpUg.c01_WW3X-DIaX5_JR14wLLdJUNy9o8OKzxEoNVBQYOIg.JPEG/471285424_1094838635299019_1624192532019363486_n.jpg?type=w966" },
+                { text: "마음을 넓게 쓰는 게 이득이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg0/MDAxNzY4MDI3ODE2OTM0.NJ-xehBXP3WaDAOQfUQKF1R09jRk55PsArtEkX8Pb8Mg.xODgXEtJCamEuCi7SKZ4svLI5VJDXsAkrA6kUKUWc3sg.JPEG/538282036_17849635953541372_3547677638810108105_n.jpg?type=w3840" },
+                { text: "자신에게 조금 더 관대해져 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDAv/MDAxNzY4MDI3ODE2ODkx.uMNh0dfiY4va4TAFE0Fd35kuRD28Z0tM4kWMKZL93P4g.tN_yzRejYpKdt5O16Awet9YmiWPxpQ5SjZFF-bRGhFEg.JPEG/538280595_17856572946497697_7654682700412029919_n.jpg?type=w3840" },
+                { text: "타인에게 너무 엄격해지지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjMz/MDAxNzY4MDI3ODM4MjUy.Tpqwk8AWdtYXJxLmmZl71ByJsVIHhEd_Dx23fB2ojs4g.TteGQIXdcvm3UEHb9h4B4APDMi2b_KoAvkFO8X7fcGYg.JPEG/539461762_17856572982497697_2686440422886215393_n.jpg?type=w966" },
+                { text: "눈앞의 인연을 소중히 여겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNjkv/MDAxNzY4MDI3ODEzNDY1.T8ccswia8IAA29zyN2Hi_gActv-ws-fNqBa2QGC8n2kg.3Ck1ZjDC72ppe4oZ6R5kR1NG6oEmwK34U3fizw8kHvIg.JPEG/537424292_17853385188516978_4746838075515821901_n.jpg?type=w966" },
+                { text: "지난 일은 미련 없이 잊어버려.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDIv/MDAxNzY4MDI3NzczNjA4.XQMMGKaE5ACZi4hMsNW8pYik-4d6JHHOboVGaYEimzkg.31j6k_FvRKZ6zfixoWtviZyYFIRWAx3DxmPf4OzHsNog.JPEG/536871543_17857104792488735_1206071782621286311_n.jpg?type=w966" },
+                { text: "다가올 미래를 차분히 대비해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNiAg/MDAxNzY4MDI3NzczNTE3.EmAW5PItr0J-QwlJqz60R-zExvE7zEDeu2x1kQJPBC0g.N0h67kRs475aQSVMHge4XtiTkcuPH6Y7aXcvdTp-bOkg.JPEG/536932836_17857104816488735_6110841852626226038_n.jpg?type=w966" },
+                { text: "현재를 즐기는 게 최고의 선택이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTgv/MDAxNzY4MDI3ODEzNDA3.sNtPQpxrkgtQp0JkYm8DKTzs3-FnMs6mezmFRL27dlgg.CQpP0zfOvZPDVctj1M9mptuusiMpe5FmUxk4NT3CyBAg.JPEG/537398155_17879289750385054_3412903911781870952_n.jpg?type=w966" },
+                { text: "사랑과 관심을 아끼지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTAg/MDAxNzY4MDI3ODEzNDI3.gzy6JIbH2TTDNmwfmf0N3YrFOjEfaYi7ugH8LSAEY_sg.S4DcLxS1zJ5JRXHqYFaX7edeQ70_37UflGw6vds9T6gg.JPEG/537404247_17853598818515561_7067340721888641970_n.jpg?type=w966" },
+                { text: "배려가 곧 너의 실력이 될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzUv/MDAxNzY4MDI3ODM3MjU4.F_3pm3zrKk-hygvpMxl4hsb1dVP7jUSnLAa9B50BfnAg.newUte9O4-msOj1TwPBb2DJ-9z97cIms0nEne2pFl3cg.JPEG/538974959_17853598821515561_7274146134821821343_n.jpg?type=w966" },
+                { text: "자신만의 철학을 확고히 가져.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk0/MDAxNzY4MDI4OTIyNzUz.cIc06qXvajBiA5WWelKTcGVx25a8CMdK8HSdDe12qpkg.ncDxJUnPNFu3o4vpHY1G36kI8vNCsWCnN3mOSWERWqog.PNG/image.png?type=w966" },
+                { text: "최고다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAx/MDAxNzY4MDI3ODM2MTg0.6YDijTgKHzsbRDeLyib0Eb875jMWvnGFAeSy7e3UYGMg.nW8d_8od3_9tFTbasYbeT3QWcYWu90bCynB4mCGAdusg.JPEG/538694495_17853598878515561_7260400000889012041_n.jpg?type=w966" },
+                { text: "그냥 해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjEz/MDAxNzY4MDI4OTQyMzky.oX1f2XZwvLcfIbX1ScAYaObDtnziDvYT_EmjPgcNXm4g.7jOOtQtSUm4QTDDNHvEf_RMu_Dh226KrhbHJw3QJqrEg.PNG/image.png?type=w966" },
+                { text: "거짓말은 결국 드러나게 돼 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc3/MDAxNzY4MDI3ODM3MTE1.dIg7vbUpLKFxuqNetvoDvs8IgJFAHSf6CyRrREQPHgMg.TFTzju0L7160ClrXBwxlHCIhO-RsWTlj6bTvmb4ypr0g.JPEG/538950981_17856572898497697_2240511337736459361_n.jpg?type=w966" },
+                { text: "스스로를 어필해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjAy/MDAxNzY4MDU5NDY1NjI2.ObpSi7CsiMAY1SgHoy-L69jiORydfJgC7e6hsHv3s50g.9XW43uShUe9hGecQN3FyMStNzdbjk8cUls_NeIUCGqQg.PNG/image.png?type=w966" },
+                { text: "지켜봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjUv/MDAxNzY4MDU5OTUyNTAz.4JNGTq1IhLVy2HFdQZit4piTjm-r2wCoMHtjkZk_Dr4g.TDxJ_klAM2_keDbDVXE26PIBNHve8zEoDuqDNLPoeNwg.PNG/image.png?type=w966" },
+                { text: "어이구야야", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjYv/MDAxNzY4MDU4NjMzODYx.o5ciCieYhm3pHui4PqoLXTO4N77BDCGkY2_DZgUVczgg.ZtzWIoLQpaiMyv1LieQu-mNCLEHAm72ZStLJanJeFV4g.JPEG/509939081_17858459097441705_6880572893059836093_n.jpg?type=w966" },
+                { text: "생각하지 못한 방향으로 갈거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNDYv/MDAxNzY4MDU5MjMyNDA1.dpn4S4k4M7s2yGwRme_qkAGnak-dKXYhrQd3Th4rU6sg.1xMJ_LSJCs4rmWGJjjpPdost0GBHaBDQRfym_X3MTvIg.PNG/image.png?type=w966" },
+                { text: "운동은 절대 너를 배신하지 않아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfOTIv/MDAxNzY4MDYwNDgwOTU3.dog2Kun2gUkrDQcCMlDqZuPIp05fFns1WCpBRxX0WS4g.ou0R5xzHJ44JNCOHVn4yewqzuay-HT2GB7tGF3_LC2wg.PNG/image.png?type=w966" },
+                { text: "자연 속에서 마음을 치유해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjk0/MDAxNzY4MDI4OTIyNzUz.cIc06qXvajBiA5WWelKTcGVx25a8CMdK8HSdDe12qpkg.ncDxJUnPNFu3o4vpHY1G36kI8vNCsWCnN3mOSWERWqog.PNG/image.png?type=w966" },
+                { text: "흔들리지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTEy/MDAxNzY4MDYwMDg3NzQy.KNFzNMwWCpfxiljue-qLxaAPVFERqvzM-d3eQLZCJMEg.-imFYEKoCxJn2cwUqwEOz5m0JayWxP7cHUNRJjpkO4Ag.PNG/image.png?type=w966" },
+                { text: "질투하지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjg0/MDAxNzY4MDYwMDEyMzQy.6UBSjqsEJ1lhMSx1cfXDN08VHQ1IF7k6-virS-2JE64g.RtxXfJKHskAusdAkJ3VUesshd5ZNV8zKeHBa5yNq7dkg.PNG/image.png?type=w966" },
+                { text: "도전하는 모습이 가장 아름다워.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUy/MDAxNzY4MDI3ODE2MDY1.yrs0h42V9pR_CIIu4TJA-IiU5kjez6hOfr6XVKz9LAkg.tHeNNH39LGo7COumSVWLMGkqb05EpAUB2QDvSrZDa_kg.JPEG/538118502_17919367869116350_3893046169320671771_n.jpg?type=w3840" },
+                { text: "실패는 성공을 위한 밑거름이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjE0/MDAxNzY4MDI3ODE1MDkw.g7FN0l8soXtN7nnBt33jsNK87rL9IdhkVeVUShdXbJMg.MuUWmtshU8TPeHZ8p07MeITojoDFsQv5ZCeyQHJKQuMg.JPEG/537864512_17853598833515561_8377938765101396250_n.jpg?type=w3840" },
+                { text: "너는 무한한 가능성을 가지고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY4/MDAxNzY4MDI3ODE1OTIw.R5ZCoW8F_-WTE-pFofSMy1BGf4_q-D3SLTD1WCKJb80g.nA26cqarqkDHW-1eeJajGsimaOshJPekPMQPFDZCLb4g.JPEG/538114875_17870281194424655_6886483980754439178_n.jpg?type=w3840" },
+                { text: "스스로의 가치를 더 높게 잡아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjg3/MDAxNzY4MDI3ODM3ODU5.s6ndPEHXbdzLysXdm6C6V2sSDJ9wyYDyGTlIo1UoyIwg.3i8v8JYE0LQN3mpQ5XNDacm7r2UMAIicZEMlChTKCksg.JPEG/539302248_17856572703497697_885640478160647670_n.jpg?type=w966" },
+                { text: "쉬엄쉬엄해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMzAw/MDAxNzY4MDU4NjMzNDE5.Tddogwc_8S7VzakbnlDsfuFS31cGC3OsBf3iz7v31fIg.TiBfVeAWs7dH31my7wfY9mlJY2_O5kJYEUDr73KxO4og.JPEG/503486876_17858459079441705_7913678109139250194_n.jpg?type=w966" },
+                { text: "골치아파진다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY2/MDAxNzY4MDI3ODE1Nzc3.p03i9ADeUsozzuAJ5RxBTWwnjlpqXU_BACdzD6m07wgg.IOGjjpzTA7Rc07Zg8iqVFsg1J4ZMOIPo1OX9AL1IKWsg.JPEG/538071471_17851842189533033_5374905778637993457_n.jpg?type=w3840" },
+                { text: "이건 된다.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTYw/MDAxNzY4MDYwODYwOTc3.YhAaEFWua5jAulJ03fiLihmmnVcWmnthk4itAKffWEQg.TppfwQK5Udw7dj214Mqhms0dECN5dc6aJZyn2o0U9wgg.PNG/image.png?type=w966" },
+                { text: "우정을 진심으로 소중히 가꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjQ1/MDAxNzY4MDI3Nzc2Mzk0.nB6DaIkC8mtiRgvZ0x_4dpWTMrdz3Qle4TrJUavmHgog.ygQWyem6JXXcoaXqkEwSSLFLPzvVwzJkWtLfp34VaRkg.JPEG/536725265_17856572748497697_7354637440744802742_n.jpg?type=w966" },
+                { text: "가족은 너의 가장 큰 버팀목이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTkv/MDAxNzY4MDU4NjM1MDIx.VUEFRfRUHMyk8d4CbLKyufiO0yBnGgiybGFUpsW2XiIg.NlY9CpCB6IzzOTkcuFrod022UiyrChr4pifniQq7uS8g.JPEG/503033279_17874175098359315_115616986407121045_n.jpg?type=w966" },
+                { text: "오늘 하루를 보람차게 채워봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTc0/MDAxNzY4MDI3ODM3MjY5.GLWctByLg-aautVCFDchi3JSXr9kFyaZs7LsYxD2zMwg.25EZs04zJUSjxmScpAZs9qUnD0it5EY55t-kOx7e-D4g.JPEG/539107457_17851842081533033_1912730392765182892_n.jpg?type=w966" },
+                { text: "매 순간 최선을 다하는 게 정답이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjAv/MDAxNzY4MDI3ODEzNDY5.ltwvlvZTO2oQx6eQrACbDNoM_zVha6VF548vgxb05Cog.5kgxgSSUztbGcTgEzRFbMAZy09rteKbN5oRyvCAzpAkg.JPEG/537446981_17856572904497697_4700555631915287542_n.jpg?type=w966" },
+                { text: "후회 없는 삶을 살기 위해 노력해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDQs/MDAxNzY4MDI3ODM3NDIw.88iQX5kAlBChEz4sYcMEXRs6ElxB13-0kiodxJ6F34gg.VFeksYK3IJaSwxbu4wrMIM232LggUG6SBTuG4W9Stvwg.JPEG/539125192_17856572973497697_2856406225777847788_n.jpg?type=w966" },
+                { text: "밝은 미래가 너를 기다리고 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjEy/MDAxNzY4MDU4NjM1MTc1.sYNlL8gHDBuGLGRnestyt5gtIHRIWnIGVp7zcL6ymacg.hPM2ecSVmsKLjiHEq1_RNF3k77uA6xYeKh6i-BcrTrIg.JPEG/503109507_17858083566430186_1531432065252969232_n.jpg?type=w966" },
+                { text: "일단 참여해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTU5/MDAxNzY4MDU4NjM0NDUx.zf_plFZR6uJoFOUopA4nP2Jxw7DYqb6WSzXwbSGQffwg.B67CslWCMvT03WTmFkD9FVL6-5Cdbb_kE-UbwxZzsWEg.JPEG/511533139_17858459058441705_8082807405976556438_n.jpg?type=w966" },
+                { text: "포기하고 싶을 때 한 번 더 버텨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTE3/MDAxNzY4MDYwODkyOTIx.D2yhaYm-jotfUet2_-slpADgcO1-yY9KXjfMJtupmbog.rEs0b8XwSeINeqodM4qEK1YEHMteHU3qFs5_-S9N4aMg.PNG/image.png?type=w966" },
+                { text: "최종 승리는 인내하는 자의 것이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTEz/MDAxNzY4MDI3NzczNDMw.EUrqD9NgMlx7hmDPY_7L_c3wtj557vpxIMm82-yKy3Mg.GSRKuwkQj8QMwa27YWgPZW_IP_V3WAvWSOdeKx2VMRgg.JPEG/471447538_1650267725900813_7568772414698423424_n.jpg?type=w966" },
+                { text: "자신을 사랑하는 것부터 시작해.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTE5/MDAxNzY4MDI3ODM3MTMw.6uzxrOKnLDZH5mHgpEmeAH1RtLXsgRdWTO7W7QC60X4g.3sw0YvznioBbYz20owvaxlGMxOAH4aqf7xvmdmaAs4Yg.JPEG/538973487_17842693161563590_5214392892771269849_n.jpg?type=w966" },
+                { text: "긍정은 기적을 만드는 힘이 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNTYv/MDAxNzY4MDYxMDcwMDIx.6oxnVEp8d6Sfjrh4MahQiNvc00mAoji7bVp94eKbW3og.TkD_byS1AZ7z_MGgZD7NB0-9qp99M4u8imIfSQn5FUsg.PNG/image.png?type=w966" },
+                { text: "좋은 결과가 있겠네.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjM3/MDAxNzY4MDU4NjMzODIw.3F2vYKbzDcrYJXRQ7Y_ZMiIGLKbYevFh4OjlL4Uf0qsg.jynwH4SRj2FN3A5F47jg6jbpdOpd45erkLaEbm3-awEg.JPEG/502594195_17858459028441705_7333448120422824270_n.jpg?type=w966" },
+                { text: "밝게 웃으며 당당하게 살아가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjcw/MDAxNzY4MDI3ODM3NDc1.ymY9tlKa3C2IL619NkkxU7sG8V6rNXm46V4UI5YiErUg.HlTjqkHcLlnG_MufI07tI-I-Ew-QuusmJkiv7jK2-eIg.JPEG/539162637_17856243447500699_4581088767879941393_n.jpg?type=w966" },
+                { text: "행운은 이미 네 편이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjA3/MDAxNzY4MDI3NzczOTU2.iwnWg7CgB-j_ulmFZWgD1KDjbAP4jP_gAz8hnogxhqsg.rjl5zDW5XwaeQpiVv7ppmOd1Pu1mWF-yUcxlshvsWnQg.JPEG/534332822_17874552852406974_2687442900649339619_n.jpg?type=w966" },
+                { text: "결국 모든 것이 다 잘 될 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTM4/MDAxNzY4MDI3ODM4NjUw.b0_UUe2moDVPRVQcOAOoBjcfH6B3LM5Q96jaGCGLylAg.TbjMJtydYgDJZkgcvm0vscRKW0ibx3eOmdMQGNCseskg.JPEG/613602467_17879544018449975_3471637619768729522_n.jpg?type=w966" },
+                { text: "포기하지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg1/MDAxNzY4MDI4MTU1NTk1.MzNCegcs_bjrv0LoLNl-l88klILphkTqaxXzrtWP-I8g.wN8AyfsEh7EhWNKEGE4iF2XQyzHVvPbc4aNw8RI-Tu8g.PNG/image.png?type=w966" },
+                { text: "너의 열정을 믿고 나아가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTQv/MDAxNzY4MDI3ODE0MjMw.c3FSLgtdRvGmB-Kp8o_zrVFiVlWL8Q-6u4UxU0ac4lcg.oz879JgKY8ad4yOG5xlBKb3gy1d01-1biMN15KAZro4g.JPEG/537707959_17856572925497697_4872398989935867305_n.jpg?type=w966" },
+                { text: "한계는 네가 정하는 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjc3/MDAxNzY4MDI3NzczNTE1.uzVzmBrEK9Xj0aXxU0bGkaIss4VOA1Bpd9EmQpkg-rwg.Ev0h8jhgOd1gqBnCsu8gxctCe8p-Ddj4bpTI1dzrziYg.JPEG/471540709_1235081514218466_462777939947061301_n.jpg?type=w966" },
+                { text: "서두르지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfNjZf/MDAxNzY4MDU4NjM0NTM4.R51UnCnue7kH-Y0eLXA_liaC7V-gq5PbPupiuCICmr0g.AHOAHkkzc_i6J8VFZlTDtwiG87y95shsMUWnXPRpSP0g.JPEG/503984209_17858459001441705_4540912113293222461_n.jpg?type=w966" },
+                { text: "쉬어가.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTE5/MDAxNzY4MDI3NzczNjA4.-5ir_hwtDqBJBiQUg2y6QEyBA6qr3aiBrOmCz9WdHCMg.ufHdbWWmDqzbiAtkbI0yPJQ6u7RO0D-gQeP_gwLS7CAg.JPEG/534351490_17874552888406974_2356238378046773832_n.jpg?type=w966" },
+                { text: "말도 안돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNTgv/MDAxNzY4MDI3ODE0MTY4.BuxXDXaUy1lrTz7BsjG3ny-aBHQdanMnBKu4t4ieUoEg.6hfto2cVnxKoqiWPES-GorEhQeGBDIFuhvPD11s-PGog.JPEG/537705665_17851842117533033_6692384493034476798_n.jpg?type=w966" },
+                { text: "배려하는 마음이 너를 빛내줄 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTMwL/MDAxNzY4MDU4NjM0MDk4.NpRxzqE6eYPZnMbJLcfiKLhmGak2gBeaUdpsUInCm3cg.9Kb2f7dueB0TgiF4IXbsbBczkKaJBRmvI16jkbmHjEgg.JPEG/503723099_17847308061503376_3987889204940218533_n.jpg?type=w966" },
+                { text: "너의 매력을 충분히 발산해 봐.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNzUv/MDAxNzY4MDI3Nzc0NDAx.A7snYje0Zo3KZb8l2FeZWbm6Rkerr9B0g3T0Hc0dnr0g.keOtzdzIONcw7tG-EKtUduomZV1Q8arlVZV31fpOeS4g.JPEG/471483003_959293889389500_264797356148724819_n.jpg?type=w966" },
+                { text: "겸손함은 가장 큰 무기야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjc3L/MDAxNzY4MDYxNDk4MTk2.Y6auzj-plmGN2DUwPdU3qbBycL2Npzu_W6eoga4RCVsg.Mp7LxabbqzkXLTrrm9F7paSJ1CeOnvWO8NhWgt0SKrYg.PNG/image.png?type=w966" },
+                { text: "오늘보다 나은 내일이 올 거야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMzIv/MDAxNzY4MDI2OTk1NDU1.ricCBbh7AeiivvDwBKz3BGNTNo7Ck-EzITbHUcDDtsEg.n4vGjCPJsw6x02kCCRclclR6L8y8vwZaRszzyqmGIi4g.JPEG/471381317_1127600962426317_3448592463784038334_n.jpg?type=w966" },
+                { text: "이거 안될 거 같은데요?", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTU2L/MDAxNzY4MDU4NjM0OTkz.mJt1ffpKhv5r5EB58r4oCINhvZBReufw3F9S2_vdFFsg.FxXgKPWldE4lVvZMKtPzFaEaIyPZh3sMEUrcBb_04WIg.JPEG/509213703_17857265160445253_3635576030723615036_n.jpg?type=w966" },
+                { text: "용기 있는 선택이 운명을 바꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTUwL/MDAxNzY4MDI3ODEzMDYx.YhjK37zjIl3WoIqqEnBijXoMpUejJ1CmetAHLd_n_58g.oGl1CgZItX0k4lYjv8dTTKn8kEXNztJWrg2Wr3jwDc8g.JPEG/537370959_17856572937497697_7915547816834064916_n.jpg?type=w966" },
+                { text: "너의 노력을 소중히 여겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMzRf/MDAxNzY4MDYwNzkyNDU0.KJBxFC-lLOrFNrRk8dMQ9YkLeIG66noozN7hPuMSV_Ig.UiMKTbbvRTPiQfTNSr84-V68j3pS6_uAO0sIBsbyXLMg.PNG/image.png?type=w966" },
+                { text: "세상은 넓고 할 일은 많아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTk2L/MDAxNzY4MDI3Nzc0MTg1.LUN2NBuhxU7LTRMiJadRd9BWSoLgJk3vbQkpAMColA4g.Ie1OpLUHa673rzMMZfUw1RKVFIN7gAIewHwcj1oPkVgg.JPEG/471446680_577532358229372_8656114789284457392_n.jpg?type=w966" },
+                { text: "너만의 색깔을 잃지 마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTM0L/MDAxNzY4MDU4NjM0MjUz.GGU4eCZnKiWX7RJ4MyjTI-FtajUNSHPxWBAY-AJV6Iog.8WaofrvLVa57_rH3NJXk564HpJ1t1lIVO-_sj_BIdPYg.JPEG/511485396_17857265202445253_3263421990074231194_n.jpg?type=w966" },
+                { text: "진심은 반드시 통하게 되어 있어.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjUwL/MDAxNzY4MDI2OTk0NTEx.kU8aozc1hLKMMMVBtUIkujw6xnlAF26FYtG3i3ALOysg.j2avlpWbCCumyeykZ_glrNh66VjY8wCf4C9e2L1giU4g.JPEG/471301537_3785900868338309_2414168105373040309_n.jpg?type=w966" },
+                { text: "눈치보지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjYwL/MDAxNzY4MDI3ODEzMDcx.fScx2vXuIAgQqRQnGd_VHgIEIIr--c8xJZGW0WVUXCwg.7QpSXHd9KiIzXxgGgfj_knkZ5fEa0jp4jifLzCtPkXgg.JPEG/537363531_17853598842515561_8263132466959710650_n.jpg?type=w966" },
+                { text: "아름다운 결말이 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjY1L/MDAxNzY4MDI3ODE1MzEz.7TxUvcmGVGBlma4AIyWb3GULh1MKoCItKzzgbkzqFVkg.dke3mSv-ZXmowNVm3OdUVSHq1hB1oboZ9Cd3kM7SfUMg.JPEG/537900806_17890805808316529_1237701650947791037_n.jpg?type=w3840" },
+                { text: "부러워하지마.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjUyL/MDAxNzY4MDI3ODM2NjY3.S00LaBXkXbivD2-1cb-4jXzpr2ATFFtNONELixsdCW4g.TUZYw6XBeH-oOyuWtTJlKvN2bAQezjj6PCtfRnNNTuEg.JPEG/538856144_17870281338424655_4053073467638453398_n.jpg?type=w966" },
+                { text: "기대해도 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA5L/MDAxNzY4MDI3Nzc2Mjk5.dk3RefDhgba7h3Q1J9PyWJS6JWVkx7OWx7OL86ov0fgg.rIoW5BmBzMOcbOdguBxxJT-oFaScUwS_7UYKOTd8hWQg.JPEG/536444437_17925390516100671_8191176836073295584_n.jpg?type=w966" },
+                { text: "한 번의 성공이 모든 걸 바꿔.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMjE1L/MDAxNzY4MDU4NjM0MjY2.4F5qTvp4UXS8cTMZWkICxW6Cgj9JoIHgKC0IW8w858Yg.MYDypIQx3J7amgBWd3cBzvx_cnNU4ye1Ntklz-V4g-4g.JPEG/503496700_17857265274445253_1055313148473751519_n.jpg?type=w966" },
+                { text: "완전 잘될듯.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTkv/MDAxNzY4MDI3Nzc0OTg0.cliT8YX0BfPlxlEdok2PgPaXq9qFuVozlQvQuesqD48g.ibUK2nWPTflYrk8eRtJbwZlZXlpyAUVNMzNxUpvpZTAg.JPEG/533979633_17874552828406974_7940691944486733453_n.jpg?type=w966" },
+                { text: "응.", img: "https://postfiles.pstatic.net/MjAyNjAxMTFfMTY1L/MDAxNzY4MDYwOTE1OTE0.IBloCl_NXDAiD_prKmsehDQhUzYCKQkLKILQlnqu0ikg.0mp8x-O8XcdEltbUNGAvgGgwpMmtxTMLKBo3Wxlr3acg.PNG/image.png?type=w966" },
+                { text: "사랑해요 데이식스.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMjM3/MDAxNzY4MDI2OTkyODcy.1Jdd2Trd_uXfx5fy0SKEke2sXY4xADfo5u5g7ZN2UnEg.YeO4h93pVcRfKhLOxSx8uGhkr0dW42fKHg4vN6-eZ7kg.JPEG/470946215_849530197145812_4157498645270876412_n.jpg?type=w966" }
             ], []);
 
             const cards = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({ id: i })), []);
@@ -353,6 +359,13 @@
                 setIsFlipped(false);
             };
 
+            // 이미지 에러 핸들러: 깨진 이미지가 있으면 대체 이미지 4개 중 랜덤 선택
+            const handleImageError = (e) => {
+                const randomFallback = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
+                e.target.onerror = null; // 무한 루프 방지
+                e.target.src = randomFallback;
+            };
+
             if (screen === 'intro') {
                 return (
                     <div className="min-h-screen bg-mystic flex flex-col items-center justify-center p-8 text-center overflow-hidden relative">
@@ -361,8 +374,8 @@
                             <div className="w-64 h-64 md:w-80 md:h-80 rounded-none border-[8px] border-white shadow-[0_0_50px_rgba(79,70,229,0.3)] overflow-hidden relative z-10 animate-bounce-subtle flex items-center justify-center bg-[#0a0a20]">
                                 <img 
                                     src="https://postfiles.pstatic.net/MjAyNjAxMTBfMTYg/MDAxNzY4MDI2OTcxMDU5.pXEV7iNDbZskzhSOl_fxcF2Kha7YvhUKpbrpTzVCrt4g.d3lR-6oy8pPov70wIn22Qqs1ofx6nUnhyL9o0_CciScg.PNG/image.png?type=w966" 
-                                    className="w-full h-full object-cover rounded-none" 
-                                    alt="Oracle Intro" 
+                                    className="w-full h-full object-cover" 
+                                    alt="Intro" 
                                 />
                             </div>
                             <div className="mt-12">
@@ -403,25 +416,21 @@
                     <div className="text-center z-10 px-6 pointer-events-none">
                         <div className="flex items-center justify-center gap-3 mb-2">
                             <Moon size={28} className="text-yellow-400 animate-pulse" fill="currentColor" />
-                            <h1 className="text-3xl font-jua tracking-[0.2em] text-white uppercase">Oracle Card</h1>
+                            <h1 className="text-3xl font-jua tracking-[0.2em] text-white uppercase">Masic Answer Card</h1>
                             <Moon size={28} className="text-yellow-400 animate-pulse rotate-180" fill="currentColor" />
                         </div>
-                        <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-[0.4em]">Spin the Wheel of Destiny</p>
+                        <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-[0.4em]">Fanning Out Your Destiny</p>
                     </div>
 
-                    {/* 카드 영역 - 전체적으로 중앙에서 살짝 아래로 내림 (mt-20) */}
-                    <div className="relative w-full h-[550px] flex items-center justify-center mt-20">
+                    <div className="relative w-full h-[550px] flex items-center justify-center mt-10">
                         {cards.map((card, index) => {
                             const isSelected = selectedId === card.id;
-                            
                             const anglePerCard = 8;
                             const baseAngle = (index - cards.length / 2) * anglePerCard;
                             const currentAngle = baseAngle + rotationOffset;
-                            
                             const radius = 900;
                             const x = radius * Math.sin((currentAngle * Math.PI) / 180);
                             const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius;
-
                             const opacity = Math.abs(currentAngle) > 60 ? 0 : 1;
 
                             return (
@@ -430,57 +439,58 @@
                                     onClick={() => handleCardClick(card.id)} 
                                     className={`absolute transition-all duration-[400ms] ease-out perspective-2000
                                         ${isSelected ? 'z-[500]' : 'z-10'}
-                                        ${!isSelected && selectedId !== null ? 'opacity-20 blur-[3px] scale-75' : ''}
+                                        ${!isSelected && selectedId !== null ? 'opacity-10 blur-[5px] scale-75' : ''}
                                     `}
                                     style={{
-                                        /* translateY 수정: -180px에서 -80px로 변경하여 덜 올라오게 함 */
                                         transform: isSelected 
-                                            ? (isFlipped ? 'translateY(0) scale(1.1) rotateY(180deg)' : 'translateY(-80px) scale(1.2) rotate(0deg)')
+                                            ? (isFlipped ? 'translateY(0) scale(1.1) rotateY(180deg)' : 'translateY(-100px) scale(1.2) rotate(0deg)')
                                             : `translate(${x}px, ${y}px) rotate(${currentAngle}deg)`,
                                         width: '220px', height: '400px', transformStyle: 'preserve-3d',
                                         opacity: isSelected ? 1 : opacity,
                                         visibility: opacity === 0 && !isSelected ? 'hidden' : 'visible'
                                     }}
                                 >
-                                    <div className="absolute inset-0 bg-[#0a0a25] rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.5)] backface-hidden overflow-hidden border border-indigo-500/20" style={{ backfaceVisibility: 'hidden' }}>
+                                    {/* 카드 뒷면: 테두리 없이 꽉 차게 */}
+                                    <div className="absolute inset-0 bg-[#0a0a25] rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.5)] backface-hidden overflow-hidden" style={{ backfaceVisibility: 'hidden' }}>
                                         <img 
-                                            src="https://postfiles.pstatic.net/MjAyNjAxMTBfMjQg/MDAxNzY4MDI3ODM2MjE3.3QqzJK1_cqnUp5OR9do3JjSiLULtSSJBtvdngyyaV_Yg.EEOb0bVELmizuqrvmbDNux-HDzD08JJgkG92y7I-us0g.PNG/image_-_10-01-2026_15-43-50.png?type=w966" 
+                                            src="https://postfiles.pstatic.net/MjAyNjAxMTFfMTAz/MDAxNzY4MTQzNTI0NTkz.TYbxrEx83UisuZ7YrkYQMBC6vo9f1UuoCm2LhjBDUSUg.mXVpXDV00BN07Sk87VKemwr7IbiL_y-WrpPUnCOE8J0g.PNG/image_-_10-01-2026_15-43-50.png?type=w966" 
                                             className="w-full h-full object-cover rounded-none" 
                                             alt="Card Back" 
                                         />
                                     </div>
                                     
-                                    <div className="absolute inset-0 bg-[#050510] border-[2px] border-yellow-400/50 rounded-none overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                                    {/* 카드 앞면: 모든 디자인 요소 통합 */}
+                                    <div className="absolute inset-0 bg-[#050510] border-[1px] border-yellow-400/40 rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
                                         <div className="w-full aspect-square relative bg-indigo-950 overflow-hidden">
-                                            <img src={drawnResult.gif} className="w-full h-full object-cover brightness-90 rounded-none" alt="result" />
-                                            <div className="absolute inset-0 border-b-[2px] border-yellow-400/30 pointer-events-none"></div>
+                                            <img 
+                                                src={drawnResult.gif} 
+                                                className="w-full h-full object-cover brightness-90 rounded-none" 
+                                                alt="Meme" 
+                                                onError={handleImageError}
+                                            />
+                                            <div className="absolute inset-0 border-b-[1px] border-yellow-400/20 pointer-events-none"></div>
                                         </div>
                                         
-                                        <div className="flex-1 flex flex-col items-center justify-start pt-8 pb-6 px-6 text-center relative overflow-hidden">
+                                        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
                                             <img 
                                                 src="https://postfiles.pstatic.net/MjAyNjAxMTBfMTAw/MDAxNzY4MDI5NzAwMjAw.6PBul7ED3TjoOza7jjkPVvYKZ05BXQuoMjNPC9VQOeIg.zWNLbqqrvRPYrodgID-_KaIGAphDvj0DUnC4kS1bMwkg.PNG/%EB%B0%94%EB%8B%A5.png?type=w966" 
-                                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-70" 
+                                                className="absolute inset-0 w-full h-full object-cover z-0 opacity-80" 
                                                 alt="text-background" 
                                             />
-                                            <div className="absolute inset-3 border-[1px] border-yellow-500/30 pointer-events-none z-10">
-                                                <TarotCorner className="absolute top-0 left-0 text-yellow-500/60" />
-                                                <TarotCorner className="absolute top-0 right-0 text-yellow-500/60 rotate-90" />
-                                                <TarotCorner className="absolute bottom-0 right-0 text-yellow-500/60 rotate-180" />
-                                                <TarotCorner className="absolute bottom-0 left-0 text-yellow-500/60 -rotate-90" />
+                                            {/* 타로 장식 선 */}
+                                            <div className="absolute inset-2 border-[0.5px] border-yellow-500/20 pointer-events-none z-10">
+                                                <TarotCorner className="absolute top-0 left-0 text-yellow-500/40" />
+                                                <TarotCorner className="absolute top-0 right-0 text-yellow-500/40 rotate-90" />
+                                                <TarotCorner className="absolute bottom-0 right-0 text-yellow-500/40 rotate-180" />
+                                                <TarotCorner className="absolute bottom-0 left-0 text-yellow-500/40 -rotate-90" />
                                             </div>
-                                            <div className="absolute inset-0 bg-indigo-950/40 z-10"></div>
-                                            <div className="relative z-20 flex flex-col items-center w-full h-full">
-                                                <div className="bg-indigo-900/80 px-4 py-0.5 rounded-full mb-5 border border-yellow-400/20">
-                                                    <p className="text-yellow-400 text-[10px] font-bold uppercase tracking-[0.2em] font-jua opacity-70">Oracle Sings</p>
-                                                </div>
-                                                <div className="w-full flex items-center justify-center min-h-[110px]">
-                                                    <p className="text-white text-xl font-myeongjo font-bold leading-relaxed break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                                                        "{drawnResult.text}"
-                                                    </p>
-                                                </div>
-                                                <div className="mt-auto opacity-20 text-yellow-500">
-                                                    <Sparkle size={16} />
-                                                </div>
+                                            
+                                            <div className="absolute inset-0 bg-indigo-950/30 z-10"></div>
+                                            
+                                            <div className="relative z-20 flex flex-col items-center justify-center w-full h-full">
+                                                <p className="text-white text-lg font-myeongjo font-bold leading-relaxed break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2">
+                                                    "{drawnResult.text}"
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -493,12 +503,12 @@
                         {isFlipped ? (
                             <button onClick={reset} className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 px-14 py-4 rounded-full flex items-center gap-3 transition-all active:scale-95 shadow-[0_10px_20px_rgba(251,191,36,0.3)] animate-in fade-in zoom-in duration-500 group pointer-events-auto">
                                 <Refresh size={22} className="group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="font-jua text-2xl tracking-wider">대답 다시 뽑기</span>
+                                <span className="font-jua text-2xl tracking-wider text-center">다른 대답 듣기</span>
                             </button>
                         ) : (
                             <div className="flex flex-col items-center gap-4">
-                                <p className="text-yellow-400/80 font-jua text-xl tracking-[0.2em] animate-bounce text-center">
-                                    {selectedId === null ? "밀어서 카드 덱을 회전시켜보세요!" : "이 카드로 하시겠습니까?"}
+                                <p className="text-yellow-400/80 font-jua text-xl tracking-[0.1em] animate-bounce text-center">
+                                    {selectedId === null ? "밀어서 카드 덱을 펼치세요!" : "이 카드를 선택하시겠습니까?"}
                                 </p>
                                 <div className="w-16 h-1.5 bg-indigo-800 rounded-full overflow-hidden opacity-30">
                                     <div className="h-full bg-yellow-400 w-1/3 animate-loading"></div>
@@ -514,5 +524,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
