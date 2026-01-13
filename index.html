@@ -19,9 +19,6 @@
     <meta name="twitter:image" content="https://postfiles.pstatic.net/MjAyNjAxMTNfMjIy/MDAxNzY4MjkxOTQwMzI2.QvgpUIczhClPFcuAUVA1bpfL2JRp9PdPkoADCN1impMg.Mk5PQi0GxKxeN4ou-JwJfGPSxSVcKSe27rkiB1lUwjUg.PNG/image_-_13-01-2026_17-11-31.png?type=w966">
     <meta name="google-adsense-account" content="ca-pub-9873081052442442">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 네이버 이미지 보안 정책 우회 -->
-    <meta name="referrer" content="no-referrer">
     <title>마법의 데식고둥</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -35,9 +32,9 @@
             padding: 0;
             background-color: #050510;
             font-family: 'Noto Sans KR', sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* 스크롤 방지 */
             color: #fff;
-            touch-action: none;
+            touch-action: none; /* 모바일 터치 제스처 충돌 방지 */
         }
 
         .font-jua { font-family: 'Jua', sans-serif; }
@@ -48,7 +45,15 @@
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
-
+        @keyframes magical-glow {
+            0% { box-shadow: 0 0 20px #fbbf24; }
+            50% { box-shadow: 0 0 60px #818cf8, 0 0 100px #fbbf24; }
+            100% { box-shadow: 0 0 20px #fbbf24; }
+        }
+        .card-flipped {
+            animation: magical-glow 2s infinite alternate;
+        }
+        
         @keyframes bounce-subtle {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-12px); }
@@ -80,6 +85,7 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
+        /* 아이콘 컴포넌트들 */
         const Heart = ({ size = 24, className = "" }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -126,11 +132,13 @@
                 "https://postfiles.pstatic.net/MjAyNjAxMTFfMjMw/MDAxNzY4MDY5MzEwOTA5.DLU6hhnt3oRD3RmXlCVpPB2_cnEajMnPORxVHjIQhfYg.1DMFvkSEHgmEJ-bAzh0fQlQsWodAcbMOoH_lnjkOzlYg.JPEG/537364187_17856572916497697_6081465195972461257_n.jpg?type=w966",
                 "https://postfiles.pstatic.net/MjAyNjAxMTFfODAg/MDAxNzY4MDY5MzY1MjY2.MdQd-clArd3_0JGkX2dlbELlq7JCddkh7Y3Isr8Ot44g.-bbsMW9jzH2FzeFJ8SBHcHql72ZYKvC6npgELlr0PDAg.JPEG/538969698_17869140549428518_4555461970602819027_n.jpg?type=w966",
                 "https://postfiles.pstatic.net/MjAyNjAxMTFfNDEg/MDAxNzY4MDY5MzY1Mjc5.2NzXB5w5CXmTxgtpT9O83l-e7S8f7mamvx4qbjPykD4g.xh90A28qanheul1Nn0lwQK_zlfc6vbCg6IENTjy_fGog.JPEG/538238381_17869140621428518_3060226390477421036_n.jpg?type=w966",
-                "https://postfiles.pstatic.net/MjAyNjAxMTFfMTI0/MDAxNzY4MDY5Mzc3Mzkx.uhTDnjillPziwpv-LCvrPCgTUazidgES0xJOoxk06log.V8U1OvGO4Uz6bhRoAH4Iex1oHb5uVguviMXNZfpKohEg.JPEG/538758614_17869140675428518_4627463516377340032_n.jpg?type=w966"
+                "https://postfiles.pstatic.net/MjAyNjAxMTFfMTI0/MDAxNzY4MDY5MzY1Mjc5.2NzXB5w5CXmTxgtpT9O83l-e7S8f7mamvx4qbjPykD4g.xh90A28qanheul1Nn0lwQK_zlfc6vbCg6IENTjy_fGog.JPEG/538238381_17869140621428518_3060226390477421036_n.jpg?type=w966"
             ];
 
+            // 데이터는 너무 길어서 생략했습니다. 기존 데이터를 그대로 사용하시면 됩니다.
+            // (사용자가 제공한 oracleData 배열을 여기에 그대로 두세요)
             const oracleData = useMemo(() => [
-               { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOSAg/MDAxNzY4MDI3ODE0MDQ3.6gdAoZtjH7fScuNsDnICL4TaGZzLt3ds8Lf2kbTjr6Ag.8X82T87NBFeST4OVWr4OGSjLwx3xmD19g36C7wmlkcIg.JPEG/537702811_17849635935541372_5623865126703965147_n.jpg?type=w966" }, 
+ { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOSAg/MDAxNzY4MDI3ODE0MDQ3.6gdAoZtjH7fScuNsDnICL4TaGZzLt3ds8Lf2kbTjr6Ag.8X82T87NBFeST4OVWr4OGSjLwx3xmD19g36C7wmlkcIg.JPEG/537702811_17849635935541372_5623865126703965147_n.jpg?type=w966" }, 
 { text: "망설임 없이 추진하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA0/MDAxNzY4MDI3Nzc1NDI3.3L44FLKBJUAUpZ2hOBipxQszwQ4P2YVZR84bL6axFa8g.bBNIrx4uR2kQCSyuY2hn8rLbe7lgQreMQOB6IQKo91Eg.JPEG/535233954_17852451489526798_4826593954940652736_n.jpg?type=w966" }, 
 { text: "무조건 찬성이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg2/MDAxNzY4MDI2OTkyMTg0.0GamBmUBUR7WIxFWw4smrByfo6CAyQ6ooyIm0rKIUVcg.E1rhKJmJoflLtA6zDa5wxRvOSwGvQG-Tmq7dKU48Eugg.JPEG/470897241_933755445395549_2158590266263032538_n.jpg?type=w966" }, 
 { text: "아주 좋은 결과가 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDgg/MDAxNzY4MDI3Nzc1MDM4.woNijVUPFc6tpveRYH78OZTLeYC0nvHoCKfsbg625BAg.IFBWXJY42RrrLQxmXtbVu_6UHsRWemCWyE6KfdpKxuAg.JPEG/534824445_17874552720406974_5120271598709001187_n.jpg?type=w966" }, 
@@ -392,6 +400,7 @@
 { text: "김원필 귀여운만큼 시도해", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfNzEg/MDAxNzY4MTkyNjc2NzEy.m5olFlzfq7ZTpmPflJlQYHAisI3CxmOa4bH_MgfCW98g.kf4hC2Nl9mH82I0NMA94JethFGwAHBUC1b9y5qhWHdEg.JPEG/GunRMvuWkAEt3aI.jpg?type=w966"}, 
 { text: "가능성은 윤도운 잘생긴 만큼", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfMjY4/MDAxNzY4MTkyNjc2Njc0.sH4R1py2O2saSf4WLvTF_-nma7mcvaQzbnsAV5hRN2gg.yGBuuRjw2Sm7Oe8nHcrKh5safTYMvNV7R2FPaCZoJ-Ug.JPEG/GunRMvAacAAO8ZI.jpg?type=w966"}, 
 { text: "화이팅", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfMjUg/MDAxNzY4MTkyNjc3MTY0.x7aXzCVTcQbn99cKasG785ZJSBpEJu5tGTOAZRY2NCIg.PKxz1WrEK1QmVUVSI0OaURteQh_y5Iaz0Bi0SIqa-rgg.JPEG/G-EM--GbEAAy3zi.jpg?type=w966"}, 
+
             ], []);
 
             const cards = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({ id: i })), []);
@@ -438,16 +447,15 @@
                 setIsFlipped(false);
             };
 
-            // 이미지 에러 핸들러: 깨진 이미지가 있으면 대체 이미지 4개 중 랜덤 선택
             const handleImageError = (e) => {
                 const randomFallback = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-                e.target.onerror = null; // 무한 루프 방지
+                e.target.onerror = null; 
                 e.target.src = randomFallback;
             };
 
             if (screen === 'intro') {
                 return (
-                    <div className="min-h-screen bg-mystic flex flex-col items-center justify-center p-8 text-center overflow-hidden relative">
+                    <div className="h-[100dvh] w-full bg-mystic flex flex-col items-center justify-center p-8 text-center overflow-hidden relative">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#fbbf2415_0%,transparent_50%)]"></div>
                         <div className="relative z-10 animate-fade-in w-full max-w-sm flex flex-col items-center">
                             <div className="w-64 h-64 md:w-80 md:h-80 rounded-none border-[8px] border-white shadow-[0_0_50px_rgba(79,70,229,0.3)] overflow-hidden relative z-10 animate-bounce-subtle flex items-center justify-center bg-[#0a0a20]">
@@ -457,9 +465,9 @@
                                     alt="Intro" 
                                 />
                             </div>
-                            <div className="mt-12">
-                                <h1 className="text-4xl md:text-5xl font-jua text-yellow-400 mb-4 tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                                    속으로 <span className="text-white">질문</span>을<br/>생각해주세요.
+                            <div className="mt-8">
+                                <h1 className="text-3xl md:text-5xl font-jua text-yellow-400 mb-4 tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                                    질문의 <span className="text-white">대답</span>을<br/>들으시겠습니까?
                                 </h1>
                                 <div className="flex justify-center gap-2 mt-4">
                                     {[...Array(3)].map((_, i) => (
@@ -474,7 +482,10 @@
 
             return (
                 <div 
-                    className="min-h-screen bg-mystic flex flex-col items-center justify-between py-10 overflow-hidden select-none relative font-serif"
+                    /* 수정 포인트: min-h-screen 대신 h-[100dvh]를 사용하여 모바일 브라우저 주소창 포함 높이에 맞춤 
+                       padding을 py-10에서 py-4로 줄임
+                    */
+                    className="h-[100dvh] w-full bg-mystic flex flex-col items-center justify-between py-4 overflow-hidden select-none relative font-serif"
                     onMouseDown={onStart}
                     onMouseMove={onMove}
                     onMouseUp={onEnd}
@@ -492,44 +503,61 @@
                         ))}
                     </div>
 
-                    <div className="text-center z-10 px-6 pointer-events-none">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                            <Moon size={28} className="text-yellow-400 animate-pulse" fill="currentColor" />
-                            <h1 className="text-3xl font-jua tracking-[0.2em] text-white uppercase">Masic Answer Card</h1>
-                            <Moon size={28} className="text-yellow-400 animate-pulse rotate-180" fill="currentColor" />
+                    {/* 헤더 간격 축소 */}
+                    <div className="text-center z-10 px-6 pointer-events-none shrink-0">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                            <Moon size={24} className="text-yellow-400 animate-pulse" fill="currentColor" />
+                            <h1 className="text-2xl font-jua tracking-[0.2em] text-white uppercase">Masic Answer Card</h1>
+                            <Moon size={24} className="text-yellow-400 animate-pulse rotate-180" fill="currentColor" />
                         </div>
                         <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-[0.4em]">Fanning Out Your Destiny</p>
                     </div>
 
-                    <div className="relative w-full h-[550px] flex items-center justify-center mt-10">
+                    {/* 카드 컨테이너 수정: 
+                        1. 고정 높이 550px 제거 -> flex-1으로 남은 공간 유동적 차지 
+                        2. items-center로 수직 중앙 정렬
+                    */}
+                    <div className="relative w-full flex-1 flex items-center justify-center overflow-visible">
                         {cards.map((card, index) => {
                             const isSelected = selectedId === card.id;
                             const anglePerCard = 8;
                             const baseAngle = (index - cards.length / 2) * anglePerCard;
                             const currentAngle = baseAngle + rotationOffset;
-                            const radius = 900;
+                            const radius = 900; // 반지름 유지
                             const x = radius * Math.sin((currentAngle * Math.PI) / 180);
-                            const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius;
+                            const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius + 100; // y축 보정
                             const opacity = Math.abs(currentAngle) > 60 ? 0 : 1;
+
+                            /* 수정 포인트: 
+                                1. 선택된 카드 위치 조정 (translateY)
+                                   - 선택 전: translateY(-80px)로 살짝 위로
+                                   - 뒤집힌 후: translateY(-120px)로 훨씬 위로 올려서 버튼과 안 겹치게 함
+                                2. 카드 크기 조정: 모바일 최적화를 위해 width: 200px, height: 340px로 축소
+                            */
+                            const transformStyle = isSelected 
+                                ? (isFlipped 
+                                    ? 'translateY(-140px) scale(1.1) rotateY(180deg)'  // 뒤집혔을 때 더 위로 이동
+                                    : 'translateY(-100px) scale(1.1) rotate(0deg)')     // 뽑았을 때 더 위로 이동
+                                : `translate(${x}px, ${y}px) rotate(${currentAngle}deg)`;
 
                             return (
                                 <div 
                                     key={card.id} 
                                     onClick={() => handleCardClick(card.id)} 
-                                    className={`absolute transition-all duration-[400ms] ease-out perspective-2000
+                                    className={`absolute transition-all duration-[600ms] ease-out perspective-2000
                                         ${isSelected ? 'z-[500]' : 'z-10'}
                                         ${!isSelected && selectedId !== null ? 'opacity-10 blur-[5px] scale-75' : ''}
                                     `}
                                     style={{
-                                        transform: isSelected 
-                                            ? (isFlipped ? 'translateY(0) scale(1.1) rotateY(180deg)' : 'translateY(-100px) scale(1.2) rotate(0deg)')
-                                            : `translate(${x}px, ${y}px) rotate(${currentAngle}deg)`,
-                                        width: '220px', height: '400px', transformStyle: 'preserve-3d',
+                                        transform: transformStyle,
+                                        width: '200px', // 가로 크기 축소
+                                        height: '340px', // 세로 크기 축소
+                                        transformStyle: 'preserve-3d',
                                         opacity: isSelected ? 1 : opacity,
                                         visibility: opacity === 0 && !isSelected ? 'hidden' : 'visible'
                                     }}
                                 >
-                                    {/* 카드 뒷면: 테두리 없이 꽉 차게 */}
+                                    {/* 카드 뒷면 */}
                                     <div className="absolute inset-0 bg-[#0a0a25] rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.5)] backface-hidden overflow-hidden" style={{ backfaceVisibility: 'hidden' }}>
                                         <img 
                                             src="https://postfiles.pstatic.net/MjAyNjAxMTFfMTAz/MDAxNzY4MTQzNTI0NTkz.TYbxrEx83UisuZ7YrkYQMBC6vo9f1UuoCm2LhjBDUSUg.mXVpXDV00BN07Sk87VKemwr7IbiL_y-WrpPUnCOE8J0g.PNG/image_-_10-01-2026_15-43-50.png?type=w966" 
@@ -538,9 +566,9 @@
                                         />
                                     </div>
                                     
-                                    {/* 카드 앞면: 모든 디자인 요소 통합 */}
+                                    {/* 카드 앞면 */}
                                     <div className="absolute inset-0 bg-[#050510] border-[1px] border-yellow-400/40 rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-                                        <div className="w-full aspect-square relative bg-indigo-950 overflow-hidden">
+                                        <div className="w-full aspect-square relative bg-indigo-950 overflow-hidden shrink-0">
                                             <img 
                                                 src={drawnResult.gif} 
                                                 className="w-full h-full object-cover brightness-90 rounded-none" 
@@ -550,13 +578,12 @@
                                             <div className="absolute inset-0 border-b-[1px] border-yellow-400/20 pointer-events-none"></div>
                                         </div>
                                         
-                                        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
+                                        <div className="flex-1 flex flex-col items-center justify-center px-4 text-center relative overflow-hidden">
                                             <img 
                                                 src="https://postfiles.pstatic.net/MjAyNjAxMTBfMTAw/MDAxNzY4MDI5NzAwMjAw.6PBul7ED3TjoOza7jjkPVvYKZ05BXQuoMjNPC9VQOeIg.zWNLbqqrvRPYrodgID-_KaIGAphDvj0DUnC4kS1bMwkg.PNG/%EB%B0%94%EB%8B%A5.png?type=w966" 
                                                 className="absolute inset-0 w-full h-full object-cover z-0 opacity-80" 
                                                 alt="text-background" 
                                             />
-                                            {/* 타로 장식 선 */}
                                             <div className="absolute inset-2 border-[0.5px] border-yellow-500/20 pointer-events-none z-10">
                                                 <TarotCorner className="absolute top-0 left-0 text-yellow-500/40" />
                                                 <TarotCorner className="absolute top-0 right-0 text-yellow-500/40 rotate-90" />
@@ -566,8 +593,8 @@
                                             
                                             <div className="absolute inset-0 bg-indigo-950/30 z-10"></div>
                                             
-                                            <div className="relative z-20 flex flex-col items-center justify-center w-full h-full">
-                                                <p className="text-white text-lg font-myeongjo font-bold leading-relaxed break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2">
+                                            <div className="relative z-20 flex flex-col items-center justify-center w-full h-full py-2">
+                                                <p className="text-white text-base md:text-lg font-myeongjo font-bold leading-relaxed break-keep drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-1">
                                                     "{drawnResult.text}"
                                                 </p>
                                             </div>
@@ -578,18 +605,19 @@
                         })}
                     </div>
 
-                    <div className="z-20 min-h-[110px] flex flex-col items-center justify-center px-6 pointer-events-none">
+                    {/* 하단 버튼 영역: 고정 높이 최소화, 패딩 추가하여 바닥에 붙지 않게 함 */}
+                    <div className="z-20 shrink-0 flex flex-col items-center justify-center px-6 pb-6 pointer-events-none min-h-[80px]">
                         {isFlipped ? (
-                            <button onClick={reset} className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 px-14 py-4 rounded-full flex items-center gap-3 transition-all active:scale-95 shadow-[0_10px_20px_rgba(251,191,36,0.3)] animate-in fade-in zoom-in duration-500 group pointer-events-auto">
-                                <Refresh size={22} className="group-hover:rotate-180 transition-transform duration-500" />
-                                <span className="font-jua text-2xl tracking-wider text-center">다른 대답 듣기</span>
+                            <button onClick={reset} className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 px-10 py-3 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-[0_10px_20px_rgba(251,191,36,0.3)] animate-in fade-in zoom-in duration-500 group pointer-events-auto">
+                                <Refresh size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+                                <span className="font-jua text-xl tracking-wider text-center">다른 대답 듣기</span>
                             </button>
                         ) : (
-                            <div className="flex flex-col items-center gap-4">
-                                <p className="text-yellow-400/80 font-jua text-xl tracking-[0.1em] animate-bounce text-center">
+                            <div className="flex flex-col items-center gap-3">
+                                <p className="text-yellow-400/80 font-jua text-lg tracking-[0.1em] animate-bounce text-center">
                                     {selectedId === null ? "밀어서 카드 덱을 펼치세요!" : "이 카드를 선택하시겠습니까?"}
                                 </p>
-                                <div className="w-16 h-1.5 bg-indigo-800 rounded-full overflow-hidden opacity-30">
+                                <div className="w-16 h-1 bg-indigo-800 rounded-full overflow-hidden opacity-30">
                                     <div className="h-full bg-yellow-400 w-1/3 animate-loading"></div>
                                 </div>
                             </div>
@@ -603,8 +631,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
-
-
-
