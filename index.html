@@ -2,14 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
     
     <meta property="og:image" content="https://postfiles.pstatic.net/MjAyNjAxMTNfMzQg/MDAxNzY4MjkyNjM0NTk3.6XhEiGvtjBb8ucDwze0CQfn_HDbPLMhP_o35EVlroi4g.jcks2gLR9-poTg_ab2VNMV_YbJoKWUz4xVQvRyHNc1kg.PNG/image_-_13-01-2026_17-11-31.png?type=w966">
-    
     <meta property="og:title" content="마법의 데식고둥">
-    
     <meta property="og:description" content="어떤 질문이든 대답해주는 마법의 카드✨">
-    
     <meta property="og:url" content="https://day6-flymyday.github.io/AnswerSoraCard/">
     <meta property="og:type" content="website">
 
@@ -18,7 +16,6 @@
     <meta name="twitter:description" content="어떤 질문이든 대답해주는 마법의 카드✨">
     <meta name="twitter:image" content="https://postfiles.pstatic.net/MjAyNjAxMTNfMjIy/MDAxNzY4MjkxOTQwMzI2.QvgpUIczhClPFcuAUVA1bpfL2JRp9PdPkoADCN1impMg.Mk5PQi0GxKxeN4ou-JwJfGPSxSVcKSe27rkiB1lUwjUg.PNG/image_-_13-01-2026_17-11-31.png?type=w966">
     <meta name="google-adsense-account" content="ca-pub-9873081052442442">
-    <meta charset="UTF-8">
     <title>마법의 데식고둥</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -85,7 +82,6 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        /* 아이콘 컴포넌트들 */
         const Heart = ({ size = 24, className = "" }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -135,9 +131,9 @@
                 "https://postfiles.pstatic.net/MjAyNjAxMTFfMTI0/MDAxNzY4MDY5MzY1Mjc5.2NzXB5w5CXmTxgtpT9O83l-e7S8f7mamvx4qbjPykD4g.xh90A28qanheul1Nn0lwQK_zlfc6vbCg6IENTjy_fGog.JPEG/538238381_17869140621428518_3060226390477421036_n.jpg?type=w966"
             ];
 
-             // 데이터는 너무 길어서 생략했습니다. 기존 데이터를 그대로 사용하시면 됩니다.
+             // 데이터는 기존 데이터를 그대로 사용
              const oracleData = useMemo(() => [
- { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOSAg/MDAxNzY4MDI3ODE0MDQ3.6gdAoZtjH7fScuNsDnICL4TaGZzLt3ds8Lf2kbTjr6Ag.8X82T87NBFeST4OVWr4OGSjLwx3xmD19g36C7wmlkcIg.JPEG/537702811_17849635935541372_5623865126703965147_n.jpg?type=w966" }, 
+              { text: "지금 즉시 행동에 옮겨.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfOSAg/MDAxNzY4MDI3ODE0MDQ3.6gdAoZtjH7fScuNsDnICL4TaGZzLt3ds8Lf2kbTjr6Ag.8X82T87NBFeST4OVWr4OGSjLwx3xmD19g36C7wmlkcIg.JPEG/537702811_17849635935541372_5623865126703965147_n.jpg?type=w966" }, 
 { text: "망설임 없이 추진하는 게 좋아.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTA0/MDAxNzY4MDI3Nzc1NDI3.3L44FLKBJUAUpZ2hOBipxQszwQ4P2YVZR84bL6axFa8g.bBNIrx4uR2kQCSyuY2hn8rLbe7lgQreMQOB6IQKo91Eg.JPEG/535233954_17852451489526798_4826593954940652736_n.jpg?type=w966" }, 
 { text: "무조건 찬성이야.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfMTg2/MDAxNzY4MDI2OTkyMTg0.0GamBmUBUR7WIxFWw4smrByfo6CAyQ6ooyIm0rKIUVcg.E1rhKJmJoflLtA6zDa5wxRvOSwGvQG-Tmq7dKU48Eugg.JPEG/470897241_933755445395549_2158590266263032538_n.jpg?type=w966" }, 
 { text: "아주 좋은 결과가 예상돼.", img: "https://postfiles.pstatic.net/MjAyNjAxMTBfNDgg/MDAxNzY4MDI3Nzc1MDM4.woNijVUPFc6tpveRYH78OZTLeYC0nvHoCKfsbg625BAg.IFBWXJY42RrrLQxmXtbVu_6UHsRWemCWyE6KfdpKxuAg.JPEG/534824445_17874552720406974_5120271598709001187_n.jpg?type=w966" }, 
@@ -399,9 +395,7 @@
 { text: "김원필 귀여운만큼 시도해", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfNzEg/MDAxNzY4MTkyNjc2NzEy.m5olFlzfq7ZTpmPflJlQYHAisI3CxmOa4bH_MgfCW98g.kf4hC2Nl9mH82I0NMA94JethFGwAHBUC1b9y5qhWHdEg.JPEG/GunRMvuWkAEt3aI.jpg?type=w966"}, 
 { text: "가능성은 윤도운 잘생긴 만큼", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfMjY4/MDAxNzY4MTkyNjc2Njc0.sH4R1py2O2saSf4WLvTF_-nma7mcvaQzbnsAV5hRN2gg.yGBuuRjw2Sm7Oe8nHcrKh5safTYMvNV7R2FPaCZoJ-Ug.JPEG/GunRMvAacAAO8ZI.jpg?type=w966"}, 
 { text: "화이팅", img: "https://postfiles.pstatic.net/MjAyNjAxMTJfMjUg/MDAxNzY4MTkyNjc3MTY0.x7aXzCVTcQbn99cKasG785ZJSBpEJu5tGTOAZRY2NCIg.PKxz1WrEK1QmVUVSI0OaURteQh_y5Iaz0Bi0SIqa-rgg.JPEG/G-EM--GbEAAy3zi.jpg?type=w966"}, 
-
              ], []);
-             // 실제 파일에는 원본의 긴 데이터를 그대로 두세요.
 
             const cards = useMemo(() => Array.from({ length: 25 }).map((_, i) => ({ id: i })), []);
 
@@ -513,22 +507,25 @@
                         {cards.map((card, index) => {
                             const isSelected = selectedId === card.id;
                             
-                            // 수정: 카드 겹침 증가 (angle 감소), 곡률 감소 (radius 증가)
-                            const anglePerCard = 5; // 8 -> 5 (더 촘촘하게)
+                            const anglePerCard = 5; 
                             const baseAngle = (index - cards.length / 2) * anglePerCard;
                             const currentAngle = baseAngle + rotationOffset;
-                            const radius = 1600; // 900 -> 1600 (더 평평하게)
+                            const radius = 1600; 
                             
                             const x = radius * Math.sin((currentAngle * Math.PI) / 180);
-                            // radius가 커진 만큼 y축 위치 보정
-                            const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius + 200; 
+                            
+                            /* 수정 포인트: 카드 전체 높이 상향 조정
+                               y값 계산시 +200 -> +50으로 변경하여 덱 전체를 150px 위로 올림
+                               이로 인해 카드가 펼쳐졌을 때 화면 하단에 쏠리지 않고 중앙에 가깝게 배치됨
+                            */
+                            const y = radius * Math.cos((currentAngle * Math.PI) / 180) - radius + 50; 
+                            
                             const opacity = Math.abs(currentAngle) > 50 ? 0 : 1;
 
-                            /* 수정: 선택된 카드 위치를 기존 위치에서 살짝만 위로 올림 (타이틀 침범 방지) */
                             const transformStyle = isSelected 
                                 ? (isFlipped 
-                                    ? 'translateY(-30px) scale(1.1) rotateY(180deg)' // 뒤집혔을 때 살짝 위
-                                    : 'translateY(-20px) scale(1.1) rotate(0deg)')   // 선택했을 때 살짝 위
+                                    ? 'translateY(-30px) scale(1.1) rotateY(180deg)' 
+                                    : 'translateY(-20px) scale(1.1) rotate(0deg)') 
                                 : `translate(${x}px, ${y}px) rotate(${currentAngle}deg)`;
 
                             return (
@@ -594,10 +591,8 @@
                         })}
                     </div>
 
-                    {/* 하단 버튼 영역: 최소 높이 줄이고 패딩 제거하여 카드와 겹치게 함 */}
                     <div className="z-20 shrink-0 flex flex-col items-center justify-center px-6 pointer-events-none min-h-[60px] pb-4">
                         {isFlipped ? (
-                            /* 수정: 버튼 크기 및 폰트 사이즈 확대 */
                             <button onClick={reset} className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 px-14 py-4 rounded-full flex items-center gap-3 transition-all active:scale-95 shadow-[0_10px_20px_rgba(251,191,36,0.3)] animate-in fade-in zoom-in duration-500 group pointer-events-auto">
                                 <Refresh size={24} className="group-hover:rotate-180 transition-transform duration-500" />
                                 <span className="font-jua text-2xl tracking-wider text-center">다른 대답 듣기</span>
